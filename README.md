@@ -1,5 +1,9 @@
 <p align="center">
+<<<<<<< HEAD
   <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="200" alt="Nest Logo" /></a>
+=======
+  <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="200" alt="Nest Logo " /></a>
+>>>>>>> 2315a01cbb5c4c748e8da5853395d10a374c6aa6
 </p>
 
 [circleci-image]: https://img.shields.io/circleci/build/github/nestjs/nest/master?token=abc123def456
