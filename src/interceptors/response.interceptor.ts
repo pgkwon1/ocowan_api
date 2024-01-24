@@ -13,14 +13,16 @@ export class ResponseInterceptor implements NestInterceptor {
     next: CallHandler<any>,
   ): Observable<any> {
     const { statusCode } = context.switchToHttp().getResponse().statusCode;
-    const result = statusCode >= 400 ? false : true;
-    const message = result ? 'success' : 'error';
     return next.handle().pipe(
-      map((data) => ({
-        result,
-        message,
-        data,
-      })),
+      map((data) => {
+        const result = statusCode >= 400 || data === false ? false : true;
+        const message = result ? 'success' : 'error';
+        return {
+          data,
+          result,
+          message,
+        };
+      }),
     );
   }
 }
