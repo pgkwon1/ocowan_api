@@ -1,9 +1,9 @@
 import { Module } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
-import { GithubModule } from './github/github.module';
+import { GithubModule } from './modules/github/github.module';
 import { SequelizeModule } from '@nestjs/sequelize';
-import GithubModel from './github/entities/github.model';
+import GithubModel from './modules/github/entities/github.model';
 import * as dotenv from 'dotenv';
 
 dotenv.config();

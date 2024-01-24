@@ -2,6 +2,7 @@ import { HttpService } from '@nestjs/axios';
 import { Body, Controller, Post } from '@nestjs/common';
 import { lastValueFrom } from 'rxjs';
 import GithubService from './github.service';
+import { GithubLoginFailException } from 'src/exception/GithubException';
 
 @Controller('github')
 export class GithubController {
@@ -50,6 +51,8 @@ export class GithubController {
           return this.githubService.register(data);
         }
       }
+      return false;
+    } else {
       return false;
     }
   }
