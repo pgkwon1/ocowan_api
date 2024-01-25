@@ -6,6 +6,7 @@ import {
   GithubNotFoundException,
   GithubRegisterFailException,
 } from 'src/exception/GithubException';
+import * as jwt from 'jsonwebtoken';
 
 @Injectable()
 export default class GithubService {
@@ -24,7 +25,11 @@ export default class GithubService {
       },
     });
     if (result) {
-      return result;
+      const token = GithubService.generateJwtToken(
+        result.login,
+        result.github_id,
+      );
+      return { login: result, token };
     }
     throw new GithubNotFoundException('존재하지 않는 유저입니다.');
   }
@@ -68,5 +73,11 @@ export default class GithubService {
       throw new GithubRegisterFailException('회원가입에 실패하였습니다.', 200);
     }
     return true;
+  }
+
+  static generateJwtToken(login: string, github_id: number): string {
+    return jwt.sign({ login, github_id }, process.env.JWT_SECRET_KEY, {
+      expiresIn: '48h',
+    });
   }
 }
