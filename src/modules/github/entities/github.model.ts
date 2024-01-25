@@ -20,10 +20,10 @@ export default class GithubModel extends Model<GithubModel> {
   readonly id: string;
 
   @Column
-  readonly login: number;
+  readonly login: string;
 
   @Column
-  readonly github_id: string;
+  readonly github_id: number;
 
   @Column
   readonly avatar_url: string;

@@ -6,10 +6,10 @@ export class GithubEntity {
   readonly id: string;
 
   @IsString()
-  readonly github_id: string;
+  readonly github_id: number;
 
   @IsNumber()
-  readonly login: number;
+  readonly login: string;
 
   @IsString()
   readonly avatar_url: string;
