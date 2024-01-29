@@ -11,7 +11,7 @@ async function bootstrap() {
   const app = await NestFactory.create(AppModule);
 
   app.useGlobalInterceptors(new ResponseInterceptor());
-  app.useGlobalPipes(new ValidationPipe({ whitelist: true, transform: true }));
+  app.useGlobalPipes(new ValidationPipe({ whitelist: true, transform: false }));
   app.useGlobalFilters(new AxiosErrorFilter());
   app.useGlobalFilters(new TypeErrorFilter());
   await app.listen(3001);
