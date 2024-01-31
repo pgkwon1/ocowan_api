@@ -2,6 +2,8 @@ import { Injectable } from '@nestjs/common';
 import { OcowanFinish } from './entities/ocowan.entity';
 import OcowanModel from './entities/ocowan.model';
 import { InjectModel } from '@nestjs/sequelize';
+import { Op } from 'sequelize';
+import * as moment from 'moment';
 
 @Injectable()
 export class OcowanService {
@@ -19,6 +21,22 @@ export class OcowanService {
         login,
         ocowan_date,
       },
+    });
+
+    return result;
+  }
+
+  async getAllOcowan(login: string): Promise<OcowanModel[]> {
+    const startDay = moment().startOf('month').format('YYYY-MM-DD');
+    const endDay = moment().endOf('month').format('YYYY-MM-DD');
+    const result = await this.ocowanModel.findAll({
+      where: {
+        login,
+        ocowan_date: {
+          [Op.between]: [startDay, endDay],
+        },
+      },
+      group: ['ocowan_date'],
     });
 
     return result;
