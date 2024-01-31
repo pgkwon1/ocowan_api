@@ -42,7 +42,7 @@ export class OcowanController {
     @Jwt() login: string,
   ): Promise<boolean> {
     const { total_count } = data;
-    const ocowan_date = moment(new Date()).format('YYYY-MM-DD');
+    const ocowan_date = moment().format('YYYY-MM-DD');
 
     const isOcowan = await this.ocowanService.isOcowan(login, ocowan_date);
 
