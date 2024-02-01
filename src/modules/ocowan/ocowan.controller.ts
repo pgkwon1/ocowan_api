@@ -20,11 +20,10 @@ export class OcowanController {
 
   @Get('/check/:login')
   async check(@Param('login') login: string): Promise<boolean> {
-    const now = moment(new Date()).format('YYYY-MM-DD');
-
+    const now = moment().format('YYYY-MM-DD');
     const result = await lastValueFrom(
       this.httpService.get(
-        `https://api.github.com/search/commits?q=author:${login}+committer-date:${'2023-12-22'}`,
+        `https://api.github.com/search/commits?q=author:${login}+committer-date:${now}`,
       ),
     );
 
