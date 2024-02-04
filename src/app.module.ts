@@ -7,6 +7,7 @@ import { AuthModule } from './modules/auth/auth.module';
 import GithubModel from './modules/github/entities/github.model';
 import * as dotenv from 'dotenv';
 import { OcowanModule } from './modules/ocowan/ocowan.module';
+import { LoggerModule } from './modules/winston/winston.module';
 import OcowanModel from './modules/ocowan/entities/ocowan.model';
 
 dotenv.config();
@@ -25,6 +26,7 @@ dotenv.config();
     GithubModule,
     AuthModule,
     OcowanModule,
+    LoggerModule,
   ],
   controllers: [AppController],
   providers: [AppService],
