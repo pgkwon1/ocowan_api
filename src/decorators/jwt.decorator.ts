@@ -11,7 +11,10 @@ export const Jwt = createParamDecorator(
     const tokens = headers.authorization.split(' ')[1];
     const decodeTokens = await decodeJwt(tokens);
     if (typeof decodeTokens === 'object') {
-      return decodeTokens.login;
+      return {
+        login: decodeTokens.login,
+        access_token: decodeTokens.access_token,
+      };
     }
 
     throw new BadRequestException('invalid token');
