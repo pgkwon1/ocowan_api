@@ -10,6 +10,7 @@ import {
   AlreadyOcowanException,
   FailOcowanException,
 } from 'src/exception/OcowanException';
+import { JwtEntity } from '../auth/entities/jwt.entity';
 
 @Controller('ocowan')
 export class OcowanController {
@@ -38,9 +39,10 @@ export class OcowanController {
   @Post('/')
   async ocowan(
     @Body() data: OcowanFinish,
-    @Jwt() login: string,
+    @Jwt() token: JwtEntity,
   ): Promise<boolean> {
     const { total_count } = data;
+    const { login } = token;
     const ocowan_date = moment().format('YYYY-MM-DD');
 
     const isOcowan = await this.ocowanService.isOcowan(login, ocowan_date);
