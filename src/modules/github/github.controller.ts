@@ -28,7 +28,6 @@ export class GithubController {
     );
 
     if ('access_token' in result.data) {
-      console.log('access');
       const { access_token } = result.data;
       const userResult = await lastValueFrom(
         this.httpService.get('https://api.github.com/user', {
@@ -46,8 +45,15 @@ export class GithubController {
         );
         if (isUser) {
           //로그인
-          return this.githubService.getUser(data.login, data.github_id);
+          const { login, github_id } = data;
+
+          await this.githubService.update({
+            github_id,
+            access_token,
+          });
+          return this.githubService.getUser({ login, github_id, access_token });
         } else {
+          data.access_token = access_token;
           return this.githubService.register(data);
         }
       }

@@ -29,6 +29,9 @@ export class GithubEntity {
   @IsString()
   readonly blog: string;
 
+  @IsString()
+  readonly access_token: string;
+
   @IsDate()
   readonly createdAt: Date;
 

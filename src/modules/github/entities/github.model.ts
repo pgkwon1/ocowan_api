@@ -49,6 +49,9 @@ export default class GithubModel extends Model<GithubModel> {
   @Column
   readonly blog: string;
 
+  @Column
+  readonly access_token: string;
+
   @CreatedAt
   readonly createdAt: Date;
 
