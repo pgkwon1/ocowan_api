@@ -20,19 +20,42 @@ export class OcowanController {
   ) {}
 
   @Get('/check/:login')
-  async check(@Param('login') login: string): Promise<boolean> {
+  async check(
+    @Param('login') login: string,
+    @Jwt() token: JwtEntity,
+  ): Promise<number | boolean> {
     const now = moment().format('YYYY-MM-DD');
-    const result = await lastValueFrom(
-      this.httpService.get(
-        `https://api.github.com/search/commits?q=author:${login}+committer-date:${now}`,
+    const query = `query{
+      viewer {
+        contributionsCollection(from: "${now}T00:00:00Z", to: "${now}T23:59:59Z") {
+          contributionCalendar {
+            totalContributions
+          }
+        }
+      }
+    }`;
+    const { data } = await lastValueFrom(
+      this.httpService.post(
+        'https://api.github.com/graphql',
+        {
+          query,
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${token.access_token}`,
+          },
+        },
       ),
     );
+    const total_count: number =
+      data.data.viewer.contributionsCollection.contributionCalendar
+        .totalContributions;
 
-    const { total_count } = result.data;
-    if (!result?.data || total_count === 0) {
-      return false;
+    if (total_count > 0) {
+      return total_count;
     }
-    return total_count;
+
+    return false;
   }
 
   @UseGuards(AuthGuard('jwt'))
