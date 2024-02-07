@@ -13,6 +13,15 @@ async function bootstrap() {
   const app = await NestFactory.create(AppModule, {
     logger: false,
   });
+  app.enableCors({
+    origin: [
+      process.env.PRODUCTION_FRONT_URL,
+      process.env.DEV_FRONT_URL,
+      process.env.LOCAL_FRONT_URL,
+    ],
+    methods: ['GET', 'POST', 'PATCH', 'PUT', 'DELETE'],
+    allowedHeaders: ['Content-Type', 'Authorization'],
+  });
   const winston = app.select(LoggerModule).get(WINSTON_MODULE_NEST_PROVIDER);
   app.useGlobalInterceptors(new ResponseInterceptor());
   app.useGlobalPipes(new ValidationPipe({ whitelist: true, transform: false }));
