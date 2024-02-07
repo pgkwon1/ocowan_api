@@ -57,8 +57,10 @@ export class GithubController {
           return this.githubService.register(data);
         }
       }
+      console.log('test');
       return false;
     } else {
+      console.log('fail');
       return false;
     }
   }
