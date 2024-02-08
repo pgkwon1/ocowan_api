@@ -31,10 +31,10 @@ export class OcowanService {
     const endDay = moment().endOf('month').format('YYYY-MM-DD');
     const result = await this.ocowanModel.findAll({
       attributes: [
-        'total_count',
-        [Sequelize.literal('ANY_VALUE(id)'), 'tmp_date'],
+        'ocowan_date',
+        [Sequelize.literal('ANY_VALUE(id)'), 'id'],
         [Sequelize.literal('ANY_VALUE(login)'), 'login'],
-        [Sequelize.literal('ANY_VALUE(ocowan_date)'), 'ocowan_date'],
+        [Sequelize.literal('ANY_VALUE(total_count)'), 'total_count'],
         [Sequelize.literal('ANY_VALUE(createdAt)'), 'createdAt'],
         [Sequelize.literal('ANY_VALUE(updatedAt)'), 'updatedAt'],
       ],
