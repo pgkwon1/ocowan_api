@@ -9,6 +9,8 @@ import * as dotenv from 'dotenv';
 import { OcowanModule } from './modules/ocowan/ocowan.module';
 import { LoggerModule } from './modules/winston/winston.module';
 import OcowanModel from './modules/ocowan/entities/ocowan.model';
+import { BigthreeModule } from './modules/bigthree/bigthree.module';
+import BigThreeModel from './modules/bigthree/entities/bigthree.model';
 
 dotenv.config();
 
@@ -21,11 +23,14 @@ dotenv.config();
       username: process.env.MYSQL_USERNAME,
       password: process.env.MYSQL_PASSWORD,
       database: process.env.MYSQL_DATABASE,
-      models: [GithubModel, OcowanModel],
+      timezone: '+09:00',
+
+      models: [GithubModel, OcowanModel, BigThreeModel],
     }),
     GithubModule,
     AuthModule,
     OcowanModule,
+    BigthreeModule,
     LoggerModule,
   ],
   controllers: [AppController],
