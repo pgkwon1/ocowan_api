@@ -44,7 +44,7 @@ export class BigthreeController {
       limit: 7,
     };
     const result = await this.bigthreeService.getAll(findOptions);
-    const orderData = result.sort(() => 1);
+    const orderData = result.sort(() => -1);
     console.log(orderData);
     return orderData;
   }
