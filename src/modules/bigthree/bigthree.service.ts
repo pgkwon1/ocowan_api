@@ -25,9 +25,11 @@ export class BigthreeService implements BaseService<BigThreeModel> {
     }
   }
 
-  async update(data, where: WhereOptions): Promise<BigThreeModel> {
+  async update(data, where: WhereOptions): Promise<number> {
     try {
-      const result = await this.bigthreeModel.create(data);
+      const [result] = await this.bigthreeModel.update(data, {
+        where,
+      });
       return result;
     } catch (error) {
       throw new HttpException('업데이트에 실패하였습니다.', 400);
