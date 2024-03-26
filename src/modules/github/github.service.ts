@@ -1,11 +1,7 @@
-import { Injectable } from '@nestjs/common';
+import { HttpException, Injectable } from '@nestjs/common';
 import { GithubRegister, GithubUpdate } from './entities/github.entity';
 import { InjectModel } from '@nestjs/sequelize';
 import GithubModel from './entities/github.model';
-import {
-  GithubNotFoundException,
-  GithubRegisterFailException,
-} from 'src/exception/GithubException';
 
 @Injectable()
 export default class GithubService {
@@ -31,7 +27,7 @@ export default class GithubService {
     if (result) {
       return { login: result };
     }
-    throw new GithubNotFoundException('존재하지 않는 유저입니다.');
+    throw new HttpException('존재하지 않는 유저입니다.', 400);
   }
 
   async isUser(login: string, github_id: number): Promise<boolean> {
@@ -72,19 +68,19 @@ export default class GithubService {
       access_token,
     });
     if (result === null) {
-      throw new GithubRegisterFailException('회원가입에 실패하였습니다.', 200);
+      throw new HttpException('회원가입에 실패하였습니다.', 400);
     }
     return true;
   }
 
   async update(updateData: GithubUpdate): Promise<boolean> {
-    const result = await this.githubModel.update(updateData, {
+    const [result] = await this.githubModel.update(updateData, {
       where: {
         github_id: updateData.github_id,
       },
     });
-    if (result[0] === 0) {
-      return false;
+    if (result === 0) {
+      throw new HttpException('회원수정에 실패하였습니다.', 400);
     }
 
     return true;

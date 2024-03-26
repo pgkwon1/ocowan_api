@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { HttpException, Injectable } from '@nestjs/common';
 import { OcowanFinish } from './entities/ocowan.entity';
 import OcowanModel from './entities/ocowan.model';
 import { InjectModel } from '@nestjs/sequelize';
@@ -12,6 +12,10 @@ export class OcowanService {
   ) {}
   async create(data: OcowanFinish) {
     const result = await this.ocowanModel.create(data);
+
+    if (!result) {
+      throw new HttpException('오코완 처리에 실패하였습니다.', 400);
+    }
     return result;
   }
 
