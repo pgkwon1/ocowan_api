@@ -10,9 +10,7 @@ import { WINSTON_MODULE_NEST_PROVIDER } from 'nest-winston';
 async function bootstrap() {
   dotenv.config();
 
-  const app = await NestFactory.create(AppModule, {
-    logger: false,
-  });
+  const app = await NestFactory.create(AppModule);
   app.enableCors({
     origin: [
       process.env.PRODUCTION_FRONT_URL,
