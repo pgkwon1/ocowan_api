@@ -1,11 +1,10 @@
-import { Controller, Get, Param, Post, UseGuards } from '@nestjs/common';
+import { Controller, Get, Post, UseGuards } from '@nestjs/common';
 import { BigthreeService } from './bigthree.service';
 import { Jwt } from 'src/decorators/jwt.decorator';
 import { JwtEntity } from '../auth/entities/jwt.entity';
 import { AuthGuard } from '@nestjs/passport';
 import { HttpService } from '@nestjs/axios';
-import { FindOptions, Op, Sequelize } from 'sequelize';
-import * as moment from 'moment-timezone';
+import { FindOptions, Sequelize } from 'sequelize';
 @Controller('bigthrees')
 export class BigthreeController {
   constructor(
@@ -43,10 +42,10 @@ export class BigthreeController {
       group: ['createdAt'],
       limit: 7,
     };
-    const result = await this.bigthreeService.getAll(findOptions);
-    const orderData = result.sort(() => -1);
-    console.log(orderData);
-    return orderData;
+    const result = (await this.bigthreeService.getAll(findOptions)).sort(
+      () => -1,
+    );
+    return result;
   }
 
   @Post()
