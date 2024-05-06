@@ -58,18 +58,20 @@ export class BigthreeService implements BaseService<BigThreeModel> {
     }
   }
 
-  async getOne(
-    data: Partial<BigThreeModel>,
-    options?: FindOptions,
-  ): Promise<BigThreeModel> {
+  async getOne(data: FindOptions<any>): Promise<BigThreeModel> {
     try {
-      const result = await this.bigthreeModel.findOne({
-        where: data,
+      const where = {
+        where: {
+          data,
+        },
         attributes: [
           [Sequelize.fn('max', Sequelize.col('pullReqCount')), 'pullReqCount'],
           [Sequelize.fn('max', Sequelize.col('issueCount')), 'issueCount'],
           [Sequelize.fn('max', Sequelize.col('commitCount')), 'commitCount'],
         ],
+      };
+      const result = await this.bigthreeModel.findOne({
+        where,
       });
       return result;
     } catch (error) {

@@ -16,7 +16,11 @@ export class BigthreeController {
   @UseGuards(AuthGuard('jwt'))
   async getBigthree(@Jwt() token: JwtEntity) {
     const { login } = token;
-    const result = await this.bigthreeService.getOne({ login });
+    const result = await this.bigthreeService.getOne({
+      where: {
+        login,
+      },
+    });
 
     return result;
   }
