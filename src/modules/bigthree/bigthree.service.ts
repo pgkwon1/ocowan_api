@@ -58,21 +58,15 @@ export class BigthreeService implements BaseService<BigThreeModel> {
     }
   }
 
-  async getOne(data: FindOptions<any>): Promise<BigThreeModel> {
+  async getOne(where: FindOptions<any>): Promise<BigThreeModel> {
     try {
-      const where = {
-        where: {
-          data,
-        },
-        attributes: [
-          [Sequelize.fn('max', Sequelize.col('pullReqCount')), 'pullReqCount'],
-          [Sequelize.fn('max', Sequelize.col('issueCount')), 'issueCount'],
-          [Sequelize.fn('max', Sequelize.col('commitCount')), 'commitCount'],
-        ],
-      };
-      const result = await this.bigthreeModel.findOne({
-        where,
-      });
+      where.attributes = [
+        [Sequelize.fn('max', Sequelize.col('pullReqCount')), 'pullReqCount'],
+        [Sequelize.fn('max', Sequelize.col('issueCount')), 'issueCount'],
+        [Sequelize.fn('max', Sequelize.col('commitCount')), 'commitCount'],
+      ];
+      const result = await this.bigthreeModel.findOne(where);
+
       return result;
     } catch (error) {
       throw new HttpException('데이터를 가져오는데 실패하였습니다.', 400);
