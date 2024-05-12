@@ -5,7 +5,7 @@ export class JwtEntity {
   readonly login: string;
 
   @IsString()
-  readonly github_id: string;
+  readonly id: string;
 
   @IsString()
   readonly access_token: string;
