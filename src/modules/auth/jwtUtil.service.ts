@@ -5,15 +5,11 @@ export class JwtUtilService {
 
   static generateJwtToken(
     login: string,
-    github_id: number,
+    id: string,
     access_token: string,
   ): string {
-    return jwt.sign(
-      { login, github_id, access_token },
-      process.env.JWT_SECRET_KEY,
-      {
-        expiresIn: '48h',
-      },
-    );
+    return jwt.sign({ login, id, access_token }, process.env.JWT_SECRET_KEY, {
+      expiresIn: '168h',
+    });
   }
 }
