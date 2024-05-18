@@ -1,5 +1,13 @@
 import { UUIDV4 } from 'sequelize';
-import { Column, Model, PrimaryKey, Table } from 'sequelize-typescript';
+import {
+  BelongsTo,
+  Column,
+  ForeignKey,
+  Model,
+  PrimaryKey,
+  Table,
+} from 'sequelize-typescript';
+import UsersModel from 'src/modules/users/entities/users.model';
 
 @Table({
   modelName: 'bigthree',
@@ -12,8 +20,9 @@ export default class BigThreeModel extends Model<BigThreeModel> {
   })
   readonly id: string;
 
+  @ForeignKey(() => UsersModel)
   @Column
-  readonly login: string;
+  readonly users_id: string;
 
   @Column({
     defaultValue: 0,
@@ -35,4 +44,7 @@ export default class BigThreeModel extends Model<BigThreeModel> {
 
   @Column
   readonly updatedAt?: Date;
+
+  @BelongsTo(() => UsersModel, 'users_id')
+  readonly github: UsersModel;
 }

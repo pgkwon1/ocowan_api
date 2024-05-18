@@ -1,14 +1,13 @@
 import { HttpService } from '@nestjs/axios';
 import { Body, Controller, Post } from '@nestjs/common';
 import { lastValueFrom } from 'rxjs';
-import GithubService from './github.service';
-import { GithubLoginFailException } from 'src/exception/GithubException';
+import UsersService from './users.service';
 import { JwtUtilService } from '../auth/jwtUtil.service';
 
-@Controller('github')
-export class GithubController {
+@Controller('users')
+export class UsersController {
   constructor(
-    private readonly githubService: GithubService,
+    private readonly usersService: UsersService,
     private readonly httpService: HttpService,
   ) {}
 
@@ -39,36 +38,41 @@ export class GithubController {
       if (status === 200 && data.login !== '') {
         data.github_id = data.id;
         let isRegister, result;
-
-        const token = JwtUtilService.generateJwtToken(
-          data.login,
-          data.github_id,
-          access_token,
-        );
-        const isUser = await this.githubService.isUser(
+        const isUser = await this.usersService.isUser(
           data.login,
           data.github_id,
         );
-
         if (isUser) {
           //로그인
           isRegister = false;
           const { login, github_id } = data;
 
-          await this.githubService.update({
-            github_id,
-            access_token,
-          });
-          result = await this.githubService.getUser({
+          await this.usersService.update(
+            {
+              access_token,
+            },
+            {
+              github_id,
+            },
+          );
+          result = await this.usersService.getUser({
             login,
             github_id,
-            access_token,
           });
         } else {
           isRegister = true;
           data.access_token = access_token;
-          result = await this.githubService.register(data);
+          result = await this.usersService.register(data);
         }
+
+        const { id } = result;
+        const token = JwtUtilService.generateJwtToken(
+          data.login,
+          id,
+          access_token,
+          data.github_id,
+        );
+
         return {
           data,
           isRegister,

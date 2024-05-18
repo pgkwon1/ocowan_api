@@ -86,8 +86,9 @@ export class OcowanController {
 
   @UseGuards(AuthGuard('jwt'))
   @Get('/:login')
-  async getAllOcowan(@Param('login') login: string) {
-    const result = await this.ocowanService.getAllOcowan(login);
+  async getAllOcowan(@Jwt() token: JwtEntity) {
+    const { id: users_id } = token;
+    const result = await this.ocowanService.getAllOcowan(users_id);
     return result;
   }
 }

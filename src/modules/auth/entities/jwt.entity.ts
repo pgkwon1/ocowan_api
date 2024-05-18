@@ -9,4 +9,7 @@ export class JwtEntity {
 
   @IsString()
   readonly access_token: string;
+
+  @IsString()
+  readonly github_id: string;
 }

@@ -15,10 +15,10 @@ export class BigthreeController {
   @Get()
   @UseGuards(AuthGuard('jwt'))
   async getBigthree(@Jwt() token: JwtEntity) {
-    const { login } = token;
+    const { id: users_id } = token;
     const result = await this.bigthreeService.getOne({
       where: {
-        login,
+        users_id,
       },
     });
 
@@ -28,15 +28,15 @@ export class BigthreeController {
   @Get('weekly')
   @UseGuards(AuthGuard('jwt'))
   async getWeekly(@Jwt() token: JwtEntity) {
-    const { login } = token;
+    const { id: users_id } = token;
     const findOptions: FindOptions = {
       where: {
-        login,
+        users_id,
       },
       attributes: [
         'createdAt',
         [Sequelize.literal('ANY_VALUE(updatedAt)'), 'updatedAt'],
-        [Sequelize.literal('ANY_VALUE(login)'), 'login'],
+        [Sequelize.literal('ANY_VALUE(users_id)'), 'users_id'],
 
         [Sequelize.fn('max', Sequelize.col('pullReqCount')), 'pullReqCount'],
         [Sequelize.fn('max', Sequelize.col('issueCount')), 'issueCount'],
@@ -55,7 +55,7 @@ export class BigthreeController {
   @Post()
   @UseGuards(AuthGuard('jwt'))
   async createBigthree(@Jwt() token: JwtEntity): Promise<boolean> {
-    const { login, access_token } = token;
+    const { id: users_id, login, access_token } = token;
     this.bigthreeService.login = login;
     this.bigthreeService.accessToken = access_token;
 
@@ -65,6 +65,7 @@ export class BigthreeController {
 
     await this.bigthreeService.create({
       login,
+      users_id,
       pullReqCount,
       issueCount,
       commitCount,

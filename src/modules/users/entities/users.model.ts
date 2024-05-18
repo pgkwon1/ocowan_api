@@ -2,17 +2,20 @@ import { UUIDV4 } from 'sequelize';
 import {
   Column,
   CreatedAt,
+  HasMany,
   Model,
   PrimaryKey,
   Table,
   UpdatedAt,
 } from 'sequelize-typescript';
+import BigThreeModel from 'src/modules/bigthree/entities/bigthree.model';
+import { TeamMemberModel } from 'src/modules/team/member/entities/member.model';
 
 @Table({
-  modelName: 'github',
-  tableName: 'github',
+  modelName: 'users',
+  tableName: 'users',
 })
-export default class GithubModel extends Model<GithubModel> {
+export default class UsersModel extends Model<UsersModel> {
   @PrimaryKey
   @Column({
     defaultValue: UUIDV4(),
@@ -57,4 +60,10 @@ export default class GithubModel extends Model<GithubModel> {
 
   @UpdatedAt
   readonly updatedAt: Date;
+
+  @HasMany(() => BigThreeModel, 'github_id')
+  readonly bigthree: BigThreeModel;
+
+  @HasMany(() => TeamMemberModel, 'github_id')
+  readonly team_member: TeamMemberModel;
 }

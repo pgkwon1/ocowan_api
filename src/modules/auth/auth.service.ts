@@ -1,12 +1,12 @@
 import { Injectable } from '@nestjs/common';
-import GithubService from '../github/github.service';
+import UsersService from '../users/users.service';
 import { GithubNotFoundException } from 'src/exception/GithubException';
 
 @Injectable()
 export default class AuthService {
-  constructor(private readonly githubService: GithubService) {}
+  constructor(private readonly usersService: UsersService) {}
   async validateUser(payload): Promise<boolean> {
-    const result = await this.githubService.isUser(
+    const result = await this.usersService.isUser(
       payload.login,
       payload.github_id,
     );

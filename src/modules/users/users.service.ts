@@ -1,37 +1,34 @@
 import { HttpException, Injectable } from '@nestjs/common';
-import { GithubRegister, GithubUpdate } from './entities/github.entity';
+import { UsersRegister, UsersUpdate } from './entities/users.entity';
 import { InjectModel } from '@nestjs/sequelize';
-import GithubModel from './entities/github.model';
+import UsersModel from './entities/users.model';
+import { WhereOptions } from 'sequelize';
 
 @Injectable()
-export default class GithubService {
-  constructor(
-    @InjectModel(GithubModel) private githubModel: typeof GithubModel,
-  ) {}
+export default class UsersService {
+  constructor(@InjectModel(UsersModel) private usersModel: typeof UsersModel) {}
 
   async getUser({
     login,
     github_id,
-    access_token,
   }: {
     login: string;
     github_id: string;
-    access_token: string;
-  }): Promise<GithubModel | object> {
-    const result = await this.githubModel.findOne({
+  }): Promise<UsersModel> {
+    const result = await this.usersModel.findOne({
       where: {
         login,
         github_id,
       },
     });
     if (result) {
-      return { login: result };
+      return result;
     }
     throw new HttpException('존재하지 않는 유저입니다.', 400);
   }
 
-  async isUser(login: string, github_id: number): Promise<boolean> {
-    const result = await this.githubModel.findOne({
+  async isUser(login: string, github_id: string): Promise<boolean> {
+    const result = await this.usersModel.findOne({
       where: {
         login,
         github_id,
@@ -43,7 +40,7 @@ export default class GithubService {
     return false;
   }
 
-  async register(registerData: GithubRegister): Promise<boolean> {
+  async register(registerData: UsersRegister): Promise<UsersModel> {
     const {
       github_id,
       login,
@@ -56,7 +53,7 @@ export default class GithubService {
       access_token,
     } = registerData;
 
-    const result = await this.githubModel.create({
+    const result = await this.usersModel.create({
       login,
       github_id,
       avatar_url,
@@ -70,15 +67,14 @@ export default class GithubService {
     if (result === null) {
       throw new HttpException('회원가입에 실패하였습니다.', 400);
     }
-    return true;
+    return result;
   }
 
-  async update(updateData: GithubUpdate): Promise<boolean> {
-    const [result] = await this.githubModel.update(updateData, {
-      where: {
-        github_id: updateData.github_id,
-      },
-    });
+  async update(
+    updateData: UsersUpdate,
+    where: WhereOptions<any>,
+  ): Promise<boolean> {
+    const [result] = await this.usersModel.update(updateData, { where });
     if (result === 0) {
       throw new HttpException('회원수정에 실패하였습니다.', 400);
     }

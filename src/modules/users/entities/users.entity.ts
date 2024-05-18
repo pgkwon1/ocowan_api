@@ -1,7 +1,7 @@
 import { OmitType, PartialType } from '@nestjs/mapped-types';
 import { IsDate, IsNumber, IsString } from 'class-validator';
 
-export class GithubEntity {
+export class UsersEntity {
   @IsString()
   readonly id: string;
 
@@ -39,10 +39,10 @@ export class GithubEntity {
   readonly updatedAt: Date;
 }
 
-export class GithubRegister extends OmitType(GithubEntity, [
+export class UsersRegister extends OmitType(UsersEntity, [
   'id',
   'createdAt',
   'updatedAt',
 ]) {}
 
-export class GithubUpdate extends PartialType(GithubEntity) {}
+export class UsersUpdate extends PartialType(UsersEntity) {}

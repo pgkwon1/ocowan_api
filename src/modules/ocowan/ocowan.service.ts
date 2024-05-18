@@ -19,10 +19,10 @@ export class OcowanService {
     return result;
   }
 
-  async isOcowan(login: string, ocowan_date: string): Promise<number> {
+  async isOcowan(users_id: string, ocowan_date: string): Promise<number> {
     const result = await this.ocowanModel.count({
       where: {
-        login,
+        users_id,
         ocowan_date,
       },
     });
@@ -30,21 +30,21 @@ export class OcowanService {
     return result;
   }
 
-  async getAllOcowan(login: string): Promise<OcowanModel[]> {
+  async getAllOcowan(users_id: string): Promise<OcowanModel[]> {
     const startDay = moment().startOf('month').format('YYYY-MM-DD');
     const endDay = moment().endOf('month').format('YYYY-MM-DD');
     const result = await this.ocowanModel.findAll({
       attributes: [
         'ocowan_date',
         [Sequelize.literal('ANY_VALUE(id)'), 'id'],
-        [Sequelize.literal('ANY_VALUE(login)'), 'login'],
+        [Sequelize.literal('ANY_VALUE(users_id)'), 'users_id'],
         [Sequelize.literal('ANY_VALUE(total_count)'), 'total_count'],
         [Sequelize.literal('ANY_VALUE(createdAt)'), 'createdAt'],
         [Sequelize.literal('ANY_VALUE(updatedAt)'), 'updatedAt'],
       ],
       raw: true,
       where: {
-        login,
+        users_id,
         ocowan_date: {
           [Op.between]: [startDay, endDay],
         },

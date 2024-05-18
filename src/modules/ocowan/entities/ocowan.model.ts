@@ -13,7 +13,7 @@ export default class OcowanModel extends Model<OcowanModel> {
   readonly id: string;
 
   @Column
-  readonly login: string;
+  readonly users_id: string;
 
   @Column
   readonly total_count: number;

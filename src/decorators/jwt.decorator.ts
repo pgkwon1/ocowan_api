@@ -11,9 +11,13 @@ export const Jwt = createParamDecorator(
     const tokens = headers.authorization.split(' ')[1];
     const decodeTokens = await decodeJwt(tokens);
     if (typeof decodeTokens === 'object') {
+      const { login, access_token, github_id, id } = decodeTokens;
+
       return {
-        login: decodeTokens.login,
-        access_token: decodeTokens.access_token,
+        login,
+        access_token,
+        github_id,
+        id,
       };
     }
 

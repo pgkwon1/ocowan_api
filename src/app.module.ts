@@ -1,10 +1,10 @@
 import { Module } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
-import { GithubModule } from './modules/github/github.module';
+import { UsersModule } from './modules/users/users.module';
 import { SequelizeModule } from '@nestjs/sequelize';
 import { AuthModule } from './modules/auth/auth.module';
-import GithubModel from './modules/github/entities/github.model';
+import UsersModel from './modules/users/entities/users.model';
 import * as dotenv from 'dotenv';
 import { OcowanModule } from './modules/ocowan/ocowan.module';
 import { LoggerModule } from './modules/winston/winston.module';
@@ -25,9 +25,9 @@ dotenv.config();
       database: process.env.MYSQL_DATABASE,
       timezone: '+09:00',
 
-      models: [GithubModel, OcowanModel, BigThreeModel],
+      models: [UsersModel, OcowanModel, BigThreeModel],
     }),
-    GithubModule,
+    UsersModule,
     AuthModule,
     OcowanModule,
     BigthreeModule,
