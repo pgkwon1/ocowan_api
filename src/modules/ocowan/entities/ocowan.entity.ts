@@ -7,7 +7,7 @@ export default class OcowanEntity {
   readonly id: string;
 
   @IsString()
-  readonly login: string;
+  readonly users_id: string;
 
   @IsNumber()
   readonly total_count: number;
@@ -23,9 +23,9 @@ export default class OcowanEntity {
   readonly updatedAt?: Date;
 }
 
-export class OcowanCheck extends PickType(OcowanEntity, ['login']) {}
+export class OcowanCheck extends PickType(OcowanEntity, ['users_id']) {}
 export class OcowanFinish extends OmitType(OcowanEntity, ['id']) {}
 export class OcowanGet extends PickType(OcowanEntity, [
-  'login',
+  'users_id',
   'ocowan_date',
 ]) {}
