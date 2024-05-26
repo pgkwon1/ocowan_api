@@ -1,4 +1,9 @@
-import { ArgumentsHost, Catch, ExceptionFilter } from '@nestjs/common';
+import {
+  ArgumentsHost,
+  Catch,
+  ExceptionFilter,
+  HttpException,
+} from '@nestjs/common';
 import { AxiosError } from 'axios';
 
 @Catch(AxiosError)
@@ -12,6 +17,18 @@ export class AxiosErrorFilter implements ExceptionFilter {
   }
 }
 
+@Catch(HttpException)
+export class HttpExceptionFilter implements ExceptionFilter {
+  catch(exception: any, host: ArgumentsHost) {
+    const response = host.switchToHttp().getResponse();
+    const { status: statusCode } = exception;
+    response.status(statusCode).json({
+      result: false,
+      statusCode,
+      message: exception.message,
+    });
+  }
+}
 @Catch(TypeError)
 export class TypeErrorFilter implements ExceptionFilter {
   catch(exception: any, host: ArgumentsHost) {

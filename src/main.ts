@@ -2,7 +2,11 @@ import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import * as dotenv from 'dotenv';
 import { ResponseInterceptor } from './interceptors/response.interceptor';
-import { AxiosErrorFilter, TypeErrorFilter } from './common/common.catch';
+import {
+  AxiosErrorFilter,
+  HttpExceptionFilter,
+  TypeErrorFilter,
+} from './common/common.catch';
 import { ValidationPipe } from '@nestjs/common';
 import { LoggerModule } from './modules/winston/winston.module';
 import { WINSTON_MODULE_NEST_PROVIDER } from 'nest-winston';
@@ -25,6 +29,7 @@ async function bootstrap() {
   app.useGlobalPipes(new ValidationPipe({ whitelist: true, transform: false }));
   app.useGlobalFilters(new AxiosErrorFilter());
   app.useGlobalFilters(new TypeErrorFilter());
+  app.useGlobalFilters(new HttpExceptionFilter());
   app.useLogger(winston);
 
   await app.listen(3001);
