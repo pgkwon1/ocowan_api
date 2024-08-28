@@ -11,6 +11,13 @@ import { LoggerModule } from './modules/winston/winston.module';
 import OcowanModel from './modules/ocowan/entities/ocowan.model';
 import { BigthreeModule } from './modules/bigthree/bigthree.module';
 import BigThreeModel from './modules/bigthree/entities/bigthree.model';
+import { TeamModel } from './modules/team/entities/team.model';
+import { TeamMemberModel } from './modules/team/member/entities/member.model';
+import { TeamInviteModel } from './modules/team/invite/entities/invite.model';
+import { TeamModule } from './modules/team/team.module';
+import { TeamMemberModule } from './modules/team/member/member.module';
+import { TeamInviteModule } from './modules/team/invite/invite.module';
+import { AzureModule } from './modules/azure/azure.module';
 
 dotenv.config();
 
@@ -25,13 +32,24 @@ dotenv.config();
       database: process.env.MYSQL_DATABASE,
       timezone: '+09:00',
 
-      models: [UsersModel, OcowanModel, BigThreeModel],
+      models: [
+        UsersModel,
+        OcowanModel,
+        BigThreeModel,
+        TeamModel,
+        TeamMemberModel,
+        TeamInviteModel,
+      ],
     }),
     UsersModule,
     AuthModule,
     OcowanModule,
     BigthreeModule,
     LoggerModule,
+    TeamModule,
+    TeamInviteModule,
+    TeamMemberModule,
+    AzureModule,
   ],
   controllers: [AppController],
   providers: [AppService],

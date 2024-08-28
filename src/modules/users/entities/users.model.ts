@@ -61,9 +61,9 @@ export default class UsersModel extends Model<UsersModel> {
   @UpdatedAt
   readonly updatedAt: Date;
 
-  @HasMany(() => BigThreeModel, 'github_id')
+  @HasMany(() => BigThreeModel, 'users_id')
   readonly bigthree: BigThreeModel;
 
-  @HasMany(() => TeamMemberModel, 'github_id')
+  @HasMany(() => TeamMemberModel, 'users_id')
   readonly team_member: TeamMemberModel;
 }
