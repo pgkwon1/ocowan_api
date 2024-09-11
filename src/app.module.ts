@@ -18,6 +18,7 @@ import { TeamModule } from './modules/team/team.module';
 import { TeamMemberModule } from './modules/team/member/member.module';
 import { TeamInviteModule } from './modules/team/invite/invite.module';
 import { AzureModule } from './modules/azure/azure.module';
+import { RedisModule } from '@songkeys/nestjs-redis';
 
 dotenv.config();
 
@@ -41,6 +42,14 @@ dotenv.config();
         TeamInviteModel,
       ],
     }),
+
+    RedisModule.forRoot({
+      config: {
+        host: process.env.REDIS_HOST,
+        port: 6379,
+      },
+    }),
+
     UsersModule,
     AuthModule,
     OcowanModule,
@@ -50,6 +59,7 @@ dotenv.config();
     TeamInviteModule,
     TeamMemberModule,
     AzureModule,
+    RedisModule,
   ],
   controllers: [AppController],
   providers: [AppService],

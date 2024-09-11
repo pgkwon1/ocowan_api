@@ -3,12 +3,14 @@ import { Body, Controller, Post } from '@nestjs/common';
 import { lastValueFrom } from 'rxjs';
 import UsersService from './users.service';
 import { JwtUtilService } from '../auth/jwtUtil.service';
+import { RedisService } from '../redis/redis.service';
 
 @Controller('users')
 export class UsersController {
   constructor(
     private readonly usersService: UsersService,
     private readonly httpService: HttpService,
+    private readonly redisService: RedisService,
   ) {}
 
   @Post('/login')
@@ -66,13 +68,15 @@ export class UsersController {
         }
 
         const { id } = result;
-        const token = JwtUtilService.generateJwtToken(
+        const token = await JwtUtilService.generateJwtToken(
           data.login,
           id,
           access_token,
           data.github_id,
         );
-
+        await this.redisService.hashSetValue(`user:${data.login}`, {
+          token,
+        });
         return {
           data,
           isRegister,

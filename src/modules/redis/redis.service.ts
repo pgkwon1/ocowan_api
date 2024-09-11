@@ -1,4 +1,5 @@
-import { Inject, Injectable } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
+import { InjectRedis } from '@songkeys/nestjs-redis';
 import * as dotenv from 'dotenv';
 import Redis, { RedisKey } from 'ioredis';
 
@@ -6,7 +7,7 @@ dotenv.config();
 
 @Injectable()
 export class RedisService {
-  constructor(@Inject('REDIS_CLIENT') private readonly redisClient: Redis) {}
+  constructor(@InjectRedis() private readonly redisClient: Redis) {}
 
   async hashSetValue(key: RedisKey, data: Record<string, string>) {
     return this.redisClient.hset(key, data);
