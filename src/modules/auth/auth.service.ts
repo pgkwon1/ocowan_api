@@ -39,7 +39,7 @@ export default class AuthService {
     const { login } = payload;
     const result = await this.redisService.hashGetValue(
       `user:${login}`,
-      'tokend',
+      'token',
     );
     if (result) {
       return true;
