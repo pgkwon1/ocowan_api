@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { HttpException, Injectable } from '@nestjs/common';
 import { PassportStrategy } from '@nestjs/passport';
 import { Strategy, ExtractJwt } from 'passport-jwt';
 import AuthService from 'src/modules/auth/auth.service';
@@ -15,6 +15,9 @@ export class JwtStrateGy extends PassportStrategy(Strategy, 'jwt') {
 
   async validate(payload) {
     const result = await this.authService.validateUser(payload);
-    return result;
+    const isValidToken = await this.authService.validateJwtToken(payload);
+
+    if (result && isValidToken) return true;
+    throw new HttpException('인증 오류', 401);
   }
 }
