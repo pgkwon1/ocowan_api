@@ -7,4 +7,6 @@ export default interface BaseService<T extends Model> {
   delete(id: string, where: WhereOptions): Promise<number>;
   getAll(options: FindOptions): Promise<T[]>;
   getOne(options: FindOptions): Promise<T>;
+  increment?(number: number, where: WhereOptions): Promise<boolean>;
+  decrement?(number: number, where: WhereOptions): Promise<boolean>;
 }
