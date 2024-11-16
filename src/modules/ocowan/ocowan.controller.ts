@@ -15,12 +15,14 @@ import { lastValueFrom } from 'rxjs';
 import { AuthGuard } from '@nestjs/passport';
 import { Jwt } from 'src/decorators/jwt.decorator';
 import { JwtEntity } from '../auth/entities/jwt.entity';
+import LevelsService from '../levels/levels.service';
 
 @Controller('ocowan')
 export class OcowanController {
   constructor(
     private readonly ocowanService: OcowanService,
     private readonly httpService: HttpService,
+    private readonly levelsService: LevelsService,
   ) {}
 
   @Get('/check/:login')
@@ -82,6 +84,7 @@ export class OcowanController {
       ocowan_date,
       total_count,
     });
+
     if (!result.dataValues) {
       throw new HttpException('오코완 처리 하는데 실패하였습니다.', 400);
     }

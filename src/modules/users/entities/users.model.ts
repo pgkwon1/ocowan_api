@@ -3,12 +3,14 @@ import {
   Column,
   CreatedAt,
   HasMany,
+  HasOne,
   Model,
   PrimaryKey,
   Table,
   UpdatedAt,
 } from 'sequelize-typescript';
 import BigThreeModel from 'src/modules/bigthree/entities/bigthree.model';
+import { LevelsModel } from 'src/modules/levels/entities/levels.model';
 import { TeamMemberModel } from 'src/modules/team/member/entities/member.model';
 
 @Table({
@@ -66,4 +68,7 @@ export default class UsersModel extends Model<UsersModel> {
 
   @HasMany(() => TeamMemberModel, 'users_id')
   readonly team_member: TeamMemberModel;
+
+  @HasOne(() => LevelsModel, 'users_id')
+  readonly levels: LevelsModel;
 }

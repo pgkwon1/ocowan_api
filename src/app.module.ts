@@ -19,6 +19,9 @@ import { TeamMemberModule } from './modules/team/member/member.module';
 import { TeamInviteModule } from './modules/team/invite/invite.module';
 import { AzureModule } from './modules/azure/azure.module';
 import { RedisModule } from '@songkeys/nestjs-redis';
+import { LevelsModel } from './modules/levels/entities/levels.model';
+import { LevelsModule } from './modules/levels/levels.module';
+import { LevelsLogsModel } from './modules/levels/entities/logs.model';
 
 dotenv.config();
 
@@ -40,6 +43,8 @@ dotenv.config();
         TeamModel,
         TeamMemberModel,
         TeamInviteModel,
+        LevelsModel,
+        LevelsLogsModel,
       ],
     }),
 
@@ -56,6 +61,8 @@ dotenv.config();
     BigthreeModule,
     LoggerModule,
     TeamModule,
+    LevelsModule,
+
     TeamInviteModule,
     TeamMemberModule,
     AzureModule,

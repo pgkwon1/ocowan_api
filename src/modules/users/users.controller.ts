@@ -61,6 +61,8 @@ export class UsersController {
             login,
             github_id,
           });
+
+          data.levels = result.levels;
         } else {
           isRegister = true;
           data.access_token = access_token;

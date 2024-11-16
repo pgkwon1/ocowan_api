@@ -3,10 +3,15 @@ import { UsersRegister, UsersUpdate } from './entities/users.entity';
 import { InjectModel } from '@nestjs/sequelize';
 import UsersModel from './entities/users.model';
 import { WhereOptions } from 'sequelize';
+import LevelsService from '../levels/levels.service';
+import { LevelsModel } from '../levels/entities/levels.model';
 
 @Injectable()
 export default class UsersService {
-  constructor(@InjectModel(UsersModel) private usersModel: typeof UsersModel) {}
+  constructor(
+    @InjectModel(UsersModel) private usersModel: typeof UsersModel,
+    private readonly levelsService: LevelsService,
+  ) {}
 
   async getUser({
     login,
@@ -20,6 +25,13 @@ export default class UsersService {
         login,
         github_id,
       },
+      include: [
+        {
+          model: LevelsModel,
+          required: false,
+          attributes: ['exp', 'level'],
+        },
+      ],
     });
     if (result) {
       return result;
@@ -63,6 +75,10 @@ export default class UsersService {
       public_repos,
       blog,
       access_token,
+    });
+
+    await this.levelsService.create({
+      users_id: result.id,
     });
     if (result === null) {
       throw new HttpException('회원가입에 실패하였습니다.', 400);
