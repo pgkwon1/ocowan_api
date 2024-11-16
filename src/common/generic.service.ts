@@ -72,7 +72,7 @@ export default class GenericService<T extends Model> {
   async increment(
     increaseField: { [key: string]: number },
     where: WhereOptions<T>,
-  ): Promise<boolean> {
+  ): Promise<Partial<T>> {
     const instance = await this.findOne(where);
     const result = await instance.increment(increaseField, {
       where,
@@ -85,7 +85,7 @@ export default class GenericService<T extends Model> {
       );
     }
 
-    return true;
+    return result;
   }
 
   async decrement(
