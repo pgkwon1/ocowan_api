@@ -6,7 +6,6 @@ import { WhereOptions } from 'sequelize';
 import { levelInfo, levelList } from 'src/constants/levels.constants';
 import LevelsLogsService from './logs.service';
 import GenericService from 'src/common/generic.service';
-import { level } from 'winston';
 
 @Injectable()
 export default class LevelsService extends GenericService<LevelsModel> {
@@ -34,7 +33,7 @@ export default class LevelsService extends GenericService<LevelsModel> {
 
     await levelData.increment({
       exp: increaseData.exp,
-      level: increaseData.level,
+      level: increaseData.level ?? 0,
     });
     await this.logsService.create({
       users_id: where['users_id'],
