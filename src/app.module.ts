@@ -22,11 +22,17 @@ import { RedisModule } from '@songkeys/nestjs-redis';
 import { LevelsModel } from './modules/levels/entities/levels.model';
 import { LevelsModule } from './modules/levels/levels.module';
 import { LevelsLogsModel } from './modules/levels/entities/logs.model';
+import { TilModule } from './modules/til/til.module';
+import { ConfigModule } from '@nestjs/config';
 
 dotenv.config();
 
 @Module({
   imports: [
+    ConfigModule.forRoot({
+      cache: true,
+      isGlobal: true,
+    }),
     SequelizeModule.forRoot({
       dialect: 'mysql',
       port: 3306,
@@ -67,6 +73,7 @@ dotenv.config();
     TeamMemberModule,
     AzureModule,
     RedisModule,
+    TilModule,
   ],
   controllers: [AppController],
   providers: [AppService],
