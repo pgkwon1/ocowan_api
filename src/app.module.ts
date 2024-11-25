@@ -24,6 +24,7 @@ import { LevelsModule } from './modules/levels/levels.module';
 import { LevelsLogsModel } from './modules/levels/entities/logs.model';
 import { TilModule } from './modules/til/til.module';
 import { ConfigModule } from '@nestjs/config';
+import { StorageModule } from './modules/storage/stroage.module';
 
 dotenv.config();
 
@@ -74,6 +75,7 @@ dotenv.config();
     AzureModule,
     RedisModule,
     TilModule,
+    StorageModule,
   ],
   controllers: [AppController],
   providers: [AppService],
