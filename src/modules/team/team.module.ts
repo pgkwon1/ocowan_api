@@ -13,8 +13,8 @@ import { BigthreeService } from '../bigthree/bigthree.service';
 import BigThreeModel from '../bigthree/entities/bigthree.model';
 import { HttpModule } from '@nestjs/axios';
 import UsersModel from '../users/entities/users.model';
-import { AzureService } from '../azure/azure.service';
-import { AzureModule } from '../azure/azure.module';
+import { StorageModule } from '../storage/stroage.module';
+import { StorageService } from '../storage/storage.service';
 
 @Module({
   imports: [
@@ -32,14 +32,14 @@ import { AzureModule } from '../azure/azure.module';
     }),
     TeamMemberModule,
     TeamInviteModule,
-    AzureModule,
+    StorageModule,
   ],
   providers: [
     TeamService,
     TeamInviteService,
     TeamMemberService,
     BigthreeService,
-    AzureService,
+    StorageService,
   ],
   controllers: [TeamController],
 })

@@ -26,6 +26,7 @@ import { AzureService } from '../azure/azure.service';
 import { v4 as uuidv4 } from 'uuid';
 import UsersModel from '../users/entities/users.model';
 import { TeamMemberModel } from './member/entities/member.model';
+import { StorageService } from '../storage/storage.service';
 
 @Controller('teams')
 export class TeamController {
@@ -33,7 +34,7 @@ export class TeamController {
     private readonly teamService: TeamService,
     private readonly teamMemberService: TeamMemberService,
     private readonly bigThreeService: BigthreeService,
-    private readonly azureService: AzureService,
+    private readonly storageService: StorageService,
   ) {}
 
   @UseGuards(AuthGuard('jwt'))
@@ -147,7 +148,7 @@ export class TeamController {
     const { id: users_id } = token;
     file.originalname = `${uuidv4()}-${file.originalname}`;
 
-    data.logo = await this.azureService.uploadFile(file);
+    data.logo = (await this.storageService.upload(file)).url;
 
     const result = await this.teamService.create(data);
 
