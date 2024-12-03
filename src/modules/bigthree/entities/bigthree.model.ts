@@ -1,6 +1,5 @@
 import { UUIDV4 } from 'sequelize';
 import {
-  BelongsTo,
   Column,
   ForeignKey,
   Model,
@@ -44,7 +43,4 @@ export default class BigThreeModel extends Model<BigThreeModel> {
 
   @Column
   readonly updatedAt?: Date;
-
-  @BelongsTo(() => UsersModel, 'users_id')
-  readonly github: UsersModel;
 }
