@@ -1,5 +1,5 @@
 import { HttpException, HttpStatus } from '@nestjs/common';
-import { WhereOptions } from 'sequelize';
+import { FindOptions, WhereOptions } from 'sequelize';
 import { Model, ModelCtor } from 'sequelize-typescript';
 
 /**
@@ -27,10 +27,8 @@ export default class GenericService<T extends Model> {
     return result;
   }
 
-  async findOne(where: WhereOptions<T>): Promise<T> {
-    const data = await this.model.findOne({
-      where,
-    });
+  async findOne(options: FindOptions<T>): Promise<T> {
+    const data = await this.model.findOne(options);
 
     if (!data) {
       throw new HttpException('데이터 조회 오류', HttpStatus.NOT_FOUND);
@@ -61,7 +59,7 @@ export default class GenericService<T extends Model> {
     return data;
   }
   async update(data: Partial<T>, where: WhereOptions): Promise<boolean> {
-    const instance = await this.findOne(where);
+    const instance = await this.findOne({ where });
     const updatedData = await instance.update(data);
 
     if (!updatedData) {
@@ -75,7 +73,9 @@ export default class GenericService<T extends Model> {
   }
 
   async delete(where: WhereOptions): Promise<void> {
-    const instance = await this.findOne(where);
+    const instance = await this.findOne({
+      where,
+    });
     await instance.destroy();
     return null;
   }
@@ -84,7 +84,9 @@ export default class GenericService<T extends Model> {
     increaseField: { [key: string]: number },
     where: WhereOptions<T>,
   ): Promise<Partial<T>> {
-    const instance = await this.findOne(where);
+    const instance = await this.findOne({
+      where,
+    });
     const result = await instance.increment(increaseField, {
       where,
     });
@@ -103,7 +105,9 @@ export default class GenericService<T extends Model> {
     decreaseField: { [key: string]: number },
     where: WhereOptions<T>,
   ): Promise<boolean> {
-    const instance = await this.findOne(where);
+    const instance = await this.findOne({
+      where,
+    });
     const result = await instance.decrement(decreaseField, {
       where,
     });

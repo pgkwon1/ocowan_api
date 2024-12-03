@@ -17,7 +17,9 @@ export default class LevelsService extends GenericService<LevelsModel> {
     increaseData: { [key: string]: number },
     where: WhereOptions<LevelsModel>,
   ): Promise<{ exp: number; level?: number }> {
-    const levelData = await super.findOne(where);
+    const levelData = await super.findOne({
+      where,
+    });
 
     let { exp, level } = levelData;
     // 현재 레벨의 최대 경험치를 가져옴.
