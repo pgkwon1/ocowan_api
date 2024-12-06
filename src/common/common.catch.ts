@@ -23,9 +23,9 @@ export class HttpExceptionFilter implements ExceptionFilter {
     const response = host.switchToHttp().getResponse();
     const { status: statusCode } = exception;
     response.status(statusCode).json({
-      result: false,
-      statusCode,
+      data: null,
       message: exception.message,
+      result: false,
     });
   }
 }
@@ -34,8 +34,9 @@ export class TypeErrorFilter implements ExceptionFilter {
   catch(exception: any, host: ArgumentsHost) {
     const response = host.switchToHttp().getResponse();
     response.status(500).json({
-      statusCode: 500,
-      message: '알 수 없는 오류가 발생하였습니다.',
+      data: null,
+      message: '알 수 없는 오류가 발생하였습니다',
+      result: false,
     });
   }
 }
