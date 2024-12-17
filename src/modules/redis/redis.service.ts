@@ -39,6 +39,15 @@ export class RedisService {
     });
   }
 
+  async setExValue(key: RedisKey, value: string, ttl: number) {
+    return new Promise((resolve, reject) => {
+      this.redisClient.setex(key, ttl, value, (err, result) => {
+        if (err) reject(err);
+        resolve(result);
+      });
+    });
+  }
+
   async getValue(key: RedisKey) {
     return new Promise((resolve) => {
       this.redisClient.get(key, (err, result) => {
