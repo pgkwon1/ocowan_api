@@ -39,6 +39,16 @@ export class RedisService {
     });
   }
 
+  async getValue(key: RedisKey) {
+    return new Promise((resolve) => {
+      this.redisClient.get(key, (err, result) => {
+        if (err)
+          throw new HttpException('알 수 없는 오류가 발생하였습니다', 500);
+        resolve(result);
+      });
+    });
+  }
+
   async setExValue(key: RedisKey, value: string, ttl: number) {
     return new Promise((resolve, reject) => {
       this.redisClient.setex(key, ttl, value, (err, result) => {
@@ -48,11 +58,10 @@ export class RedisService {
     });
   }
 
-  async getValue(key: RedisKey) {
-    return new Promise((resolve) => {
-      this.redisClient.get(key, (err, result) => {
-        if (err)
-          throw new HttpException('알 수 없는 오류가 발생하였습니다', 500);
+  async getExValue(key: RedisKey, ttl: number) {
+    return new Promise((resolve, reject) => {
+      this.redisClient.getex(key, 'EX', ttl, (err, result) => {
+        if (err) reject(err);
         resolve(result);
       });
     });
