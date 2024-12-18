@@ -58,6 +58,11 @@ export default class GenericService<T extends Model> {
     }
     return data;
   }
+
+  async count(where: WhereOptions): Promise<number> {
+    return await this.model.count({ where });
+  }
+
   async update(data: Partial<T>, where: WhereOptions): Promise<boolean> {
     const instance = await this.findOne({ where });
     const updatedData = await instance.update(data);
