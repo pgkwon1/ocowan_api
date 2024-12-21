@@ -1,5 +1,5 @@
 import { HttpException, HttpStatus } from '@nestjs/common';
-import { FindOptions, WhereOptions } from 'sequelize';
+import { FindOptions, Transaction, WhereOptions } from 'sequelize';
 import { Model, ModelCtor } from 'sequelize-typescript';
 
 /**
@@ -10,12 +10,15 @@ import { Model, ModelCtor } from 'sequelize-typescript';
 
 export default class GenericService<T extends Model> {
   private readonly model: ModelCtor<T>;
+  private transaction: Transaction;
   constructor(model: ModelCtor<T>) {
     this.model = model;
   }
 
   async create(data: T['_creationAttributes']): Promise<T> {
-    const result = await this.model.create(data);
+    const result = await this.model.create(data, {
+      transaction: this.transaction || null,
+    });
 
     if (!result) {
       throw new HttpException(
@@ -65,7 +68,9 @@ export default class GenericService<T extends Model> {
 
   async update(data: Partial<T>, where: WhereOptions): Promise<boolean> {
     const instance = await this.findOne({ where });
-    const updatedData = await instance.update(data);
+    const updatedData = await instance.update(data, {
+      transaction: this.transaction || null,
+    });
 
     if (!updatedData) {
       throw new HttpException(
@@ -81,7 +86,9 @@ export default class GenericService<T extends Model> {
     const instance = await this.findOne({
       where,
     });
-    await instance.destroy();
+    await instance.destroy({
+      transaction: this.transaction || null,
+    });
     return null;
   }
 
@@ -94,6 +101,7 @@ export default class GenericService<T extends Model> {
     });
     const result = await instance.increment(increaseField, {
       where,
+      transaction: this.transaction || null,
     });
 
     if (!result) {
@@ -115,6 +123,7 @@ export default class GenericService<T extends Model> {
     });
     const result = await instance.decrement(decreaseField, {
       where,
+      transaction: this.transaction || null,
     });
 
     if (!result) {
@@ -125,5 +134,46 @@ export default class GenericService<T extends Model> {
     }
 
     return true;
+  }
+
+  /* 트랜잭션 처리 순서 보장됨 */
+  async executeTransaction(
+    transactionList: Array<
+      () => Promise<T | boolean | void>
+    > /* transaction 말고도 메소드 마다의 파라미터 들을 받아서 추가 처리 필요 */,
+  ) {
+    this.transaction = await this.model.sequelize.transaction();
+
+    try {
+      for (const execTransaction of transactionList) {
+        await execTransaction();
+      }
+      await this.transaction.commit();
+    } catch (error) {
+      await this.transaction.rollback();
+      throw new HttpException(
+        '처리 중 오류가 발생하였습니다.',
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
+    }
+  }
+
+  /* 트랜잭션 일괄처리 (순서 보장 안됨) */
+  async executeTransactionNonOrder(
+    transactionList: Array<() => Promise<T | boolean | void>>,
+  ) {
+    try {
+      this.transaction = await this.model.sequelize.transaction();
+      await Promise.all(
+        transactionList.map((execTransaction) => execTransaction()),
+      );
+      await this.transaction.commit();
+    } catch {
+      this.transaction.rollback();
+      throw new HttpException(
+        '처리 중 오류가 발생하였습니다.',
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
+    }
   }
 }
