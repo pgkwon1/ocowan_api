@@ -9,7 +9,10 @@ dotenv.config();
 export class RedisService {
   constructor(@InjectRedis() private readonly redisClient: Redis) {}
 
-  async hashSetValue(key: RedisKey, data: Record<string, string>) {
+  async hashSetValue(
+    key: RedisKey,
+    data: Record<string, string>,
+  ): Promise<number> {
     return new Promise((resolve) => {
       this.redisClient.hset(key, data, (err, result) => {
         if (err)
@@ -19,7 +22,7 @@ export class RedisService {
     });
   }
 
-  async hashGetValue(key: RedisKey, field: string): Promise<string> {
+  async hashGetValue(key: RedisKey, field: string): Promise<string | null> {
     return new Promise((resolve) => {
       this.redisClient.hget(key, field, (err, result) => {
         if (err)
@@ -39,7 +42,7 @@ export class RedisService {
     });
   }
 
-  async getValue(key: RedisKey) {
+  async getValue(key: RedisKey): Promise<string | null> {
     return new Promise((resolve) => {
       this.redisClient.get(key, (err, result) => {
         if (err)
@@ -58,7 +61,7 @@ export class RedisService {
     });
   }
 
-  async getExValue(key: RedisKey, ttl: number) {
+  async getExValue(key: RedisKey, ttl: number): Promise<string | null> {
     return new Promise((resolve, reject) => {
       this.redisClient.getex(key, 'EX', ttl, (err, result) => {
         if (err) reject(err);
