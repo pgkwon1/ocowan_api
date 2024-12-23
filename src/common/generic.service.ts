@@ -62,8 +62,8 @@ export default class GenericService<T extends Model> {
     return data;
   }
 
-  async count(where: WhereOptions): Promise<number> {
-    return await this.model.count({ where });
+  async count(options: FindOptions<T>): Promise<number> {
+    return await this.model.count(options);
   }
 
   async update(data: Partial<T>, where: WhereOptions): Promise<boolean> {
@@ -82,20 +82,21 @@ export default class GenericService<T extends Model> {
     return false;
   }
 
-  async delete(where: WhereOptions): Promise<void> {
-    const instance = await this.findOne({
-      where,
-    });
-    await instance.destroy({
-      transaction: this.transaction || null,
-    });
+  async delete(options: FindOptions<T>): Promise<void> {
+    const instance = await this.model.findOne(options);
+
+    if (instance) {
+      await instance.destroy({
+        transaction: this.transaction || null,
+      });
+    }
     return null;
   }
 
   async increment(
     increaseField: { [key: string]: number },
     where: WhereOptions<T>,
-  ): Promise<Partial<T>> {
+  ): Promise<T | Partial<T>> {
     const instance = await this.findOne({
       where,
     });
@@ -139,7 +140,7 @@ export default class GenericService<T extends Model> {
   /* 트랜잭션 처리 순서 보장됨 */
   async executeTransaction(
     transactionList: Array<
-      () => Promise<T | boolean | void>
+      () => Promise<Model<any, any> | Partial<T> | boolean | void>
     > /* transaction 말고도 메소드 마다의 파라미터 들을 받아서 추가 처리 필요 */,
   ) {
     this.transaction = await this.model.sequelize.transaction();
@@ -149,8 +150,11 @@ export default class GenericService<T extends Model> {
         await execTransaction();
       }
       await this.transaction.commit();
+      this.transaction = null;
     } catch (error) {
       await this.transaction.rollback();
+      this.transaction = null;
+
       throw new HttpException(
         '처리 중 오류가 발생하였습니다.',
         HttpStatus.INTERNAL_SERVER_ERROR,
@@ -160,16 +164,21 @@ export default class GenericService<T extends Model> {
 
   /* 트랜잭션 일괄처리 (순서 보장 안됨) */
   async executeTransactionNonOrder(
-    transactionList: Array<() => Promise<T | boolean | void>>,
+    transactionList: Array<
+      () => Promise<Model<any, any> | Partial<T> | boolean | void>
+    >,
   ) {
     try {
       this.transaction = await this.model.sequelize.transaction();
-      await Promise.all(
+      const result = await Promise.all(
         transactionList.map((execTransaction) => execTransaction()),
       );
       await this.transaction.commit();
+      this.transaction = null;
+      return result;
     } catch {
       this.transaction.rollback();
+      this.transaction = null;
       throw new HttpException(
         '처리 중 오류가 발생하였습니다.',
         HttpStatus.INTERNAL_SERVER_ERROR,
