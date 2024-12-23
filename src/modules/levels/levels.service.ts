@@ -14,9 +14,9 @@ export default class LevelsService extends GenericService<LevelsModel> {
   }
 
   async increment(
-    increaseData: { [key: string]: number },
+    increaseField: { [key: string]: number },
     where: WhereOptions<LevelsModel>,
-  ): Promise<{ exp: number; level?: number }> {
+  ): Promise<Partial<LevelsModel>> {
     const levelData = await super.findOne({
       where,
     });
@@ -27,23 +27,20 @@ export default class LevelsService extends GenericService<LevelsModel> {
       (level) => exp > level.expMin && exp < level.expMax,
     );
 
-    if (currentLevelExp.expMax < levelData.exp + increaseData.exp) {
-      increaseData.level = 1;
+    if (currentLevelExp.expMax < levelData.exp + increaseField.exp) {
+      increaseField.level = 1;
       level += 1;
     }
-    exp += increaseData.exp;
+    exp += increaseField.exp;
 
-    await levelData.increment({
-      exp: increaseData.exp,
-      level: increaseData.level ?? 0,
+    await super.increment(increaseField, {
+      exp: increaseField.exp,
+      level: increaseField.level ?? 0,
     });
     await this.logsService.create({
       users_id: where['users_id'],
-      exp: increaseData['exp'],
+      exp: increaseField['exp'],
     });
-    return {
-      exp,
-      level,
-    };
+    return { exp, level };
   }
 }
