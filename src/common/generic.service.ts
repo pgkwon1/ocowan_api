@@ -1,13 +1,18 @@
 import { HttpException, HttpStatus } from '@nestjs/common';
-import { FindOptions, Transaction, WhereOptions } from 'sequelize';
+import {
+  FindOptions,
+  InferAttributes,
+  Transaction,
+  WhereOptions,
+} from 'sequelize';
 import { Model, ModelCtor } from 'sequelize-typescript';
 
+type ModelAttribute<T extends Model> = InferAttributes<T>;
 /**
  * Generic Service
  * T : 모델 클래스 파일 TCreationAttributes 인터페이스 구현 필수
  * E : 엔티티 클래스 파일
  */
-
 export default class GenericService<T extends Model> {
   private readonly model: ModelCtor<T>;
   private transaction: Transaction;
@@ -94,7 +99,7 @@ export default class GenericService<T extends Model> {
   }
 
   async increment(
-    increaseField: { [key: string]: number },
+    increaseField: { [K in keyof ModelAttribute<T>]?: number },
     where: WhereOptions<T>,
   ): Promise<T | Partial<T>> {
     const instance = await this.findOne({
@@ -116,12 +121,13 @@ export default class GenericService<T extends Model> {
   }
 
   async decrement(
-    decreaseField: { [key: string]: number },
+    decreaseField: { [K in keyof ModelAttribute<T>]?: number },
     where: WhereOptions<T>,
   ): Promise<boolean> {
     const instance = await this.findOne({
       where,
     });
+
     const result = await instance.decrement(decreaseField, {
       where,
       transaction: this.transaction || null,
@@ -165,18 +171,19 @@ export default class GenericService<T extends Model> {
   /* 트랜잭션 일괄처리 (순서 보장 안됨) */
   async executeTransactionNonOrder(
     transactionList: Array<
-      () => Promise<Model<any, any> | Partial<T> | boolean | void>
+      () => Promise<boolean | void | Model<any, any> | Partial<T>>
     >,
-  ) {
+  ): Promise<Array<boolean | void | Model<any, any> | Partial<T>>> {
     try {
       this.transaction = await this.model.sequelize.transaction();
       const result = await Promise.all(
         transactionList.map((execTransaction) => execTransaction()),
       );
+
       await this.transaction.commit();
       this.transaction = null;
       return result;
-    } catch {
+    } catch (err) {
       this.transaction.rollback();
       this.transaction = null;
       throw new HttpException(
