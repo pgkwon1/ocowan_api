@@ -36,11 +36,7 @@ export class OcowanService {
     const result = await this.ocowanModel.findAll({
       attributes: [
         'ocowan_date',
-        [Sequelize.literal('ANY_VALUE(id)'), 'id'],
-        [Sequelize.literal('ANY_VALUE(users_id)'), 'users_id'],
         [Sequelize.literal('ANY_VALUE(total_count)'), 'total_count'],
-        [Sequelize.literal('ANY_VALUE(createdAt)'), 'createdAt'],
-        [Sequelize.literal('ANY_VALUE(updatedAt)'), 'updatedAt'],
       ],
       raw: true,
       where: {
