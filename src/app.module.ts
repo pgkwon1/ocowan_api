@@ -25,6 +25,8 @@ import { LevelsLogsModel } from './modules/levels/entities/logs.model';
 import { TilModule } from './modules/til/til.module';
 import { ConfigModule } from '@nestjs/config';
 import { StorageModule } from './modules/storage/stroage.module';
+import TilModel from './modules/til/entities/til.model';
+import EmotifyModel from './modules/til/entities/emotify.model';
 
 dotenv.config();
 
@@ -52,6 +54,8 @@ dotenv.config();
         TeamInviteModel,
         LevelsModel,
         LevelsLogsModel,
+        TilModel,
+        EmotifyModel,
       ],
     }),
 
