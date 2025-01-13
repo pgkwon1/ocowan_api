@@ -9,6 +9,12 @@ dotenv.config();
 export class RedisService {
   constructor(@InjectRedis() private readonly redisClient: Redis) {}
 
+  /**
+   *
+   * @param key
+   * @param data <field, value>
+   * @returns
+   */
   async hashSetValue(
     key: RedisKey,
     data: Record<string, string>,
