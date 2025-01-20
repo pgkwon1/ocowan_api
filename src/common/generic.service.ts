@@ -83,8 +83,7 @@ export default class GenericService<T extends Model> {
         HttpStatus.INTERNAL_SERVER_ERROR,
       );
     }
-
-    return false;
+    return true;
   }
 
   async delete(options: FindOptions<T>): Promise<void> {
