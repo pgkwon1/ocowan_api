@@ -71,19 +71,18 @@ export default class GenericService<T extends Model> {
     return await this.model.count(options);
   }
 
-  async update(data: Partial<T>, where: WhereOptions): Promise<boolean> {
+  async update(data: Partial<T>, where: WhereOptions): Promise<Partial<T>> {
     const instance = await this.findOne({ where });
     const updatedData = await instance.update(data, {
       transaction: this.transaction || null,
     });
-
     if (!updatedData) {
       throw new HttpException(
         '데이터 수정 오류',
         HttpStatus.INTERNAL_SERVER_ERROR,
       );
     }
-    return true;
+    return updatedData;
   }
 
   async delete(options: FindOptions<T>): Promise<void> {
