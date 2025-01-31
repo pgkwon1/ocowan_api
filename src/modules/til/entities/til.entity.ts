@@ -36,4 +36,13 @@ export default class TIL_ENTITY {
   readonly ideaCnt: number;
 }
 
-export interface TilCreateAttrDto extends Omit<TIL_ENTITY, 'id'> {}
+type NonRequiredCreationColumn =
+  | 'id'
+  | 'thumbsUpCnt'
+  | 'heartCnt'
+  | 'smileCnt'
+  | 'fireCnt'
+  | 'ideaCnt';
+
+export interface TilCreateAttrDto
+  extends Omit<TIL_ENTITY, NonRequiredCreationColumn> {}

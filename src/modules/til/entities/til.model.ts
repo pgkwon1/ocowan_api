@@ -32,7 +32,6 @@ export enum TIL_CATEGORY {
 export interface TilAttribute extends InferAttributes<TilModel> {}
 
 export interface TilCreationAttrDao extends TilCreateAttrDto {}
-
 @Table({
   modelName: 'til',
   tableName: 'til',
