@@ -45,20 +45,32 @@ export default class GenericService<T extends Model> {
     return data;
   }
 
-  async findAll(
-    where: WhereOptions = { 1: 1 },
-    order: [[string, 'ASC' | 'DESC']] = [['createdAt', 'DESC']],
-  ): Promise<T[]> {
+  async findAll({
+    where = {},
+    order = [['createdAt', 'DESC']],
+    offset = 0,
+    limit = 10,
+  }: {
+    where?: WhereOptions;
+    order?: [[string, 'ASC' | 'DESC']];
+    offset?: number;
+    limit?: number;
+  }): Promise<T[]> {
     const modelAttribute = Object.keys(this.model.getAttributes());
     order.map((val) => {
       const [column] = val;
       if (!modelAttribute.includes(column)) {
-        throw new HttpException('컬럼 오류', HttpStatus.INTERNAL_SERVER_ERROR);
+        throw new HttpException(
+          'ORDER 컬럼 오류',
+          HttpStatus.INTERNAL_SERVER_ERROR,
+        );
       }
     });
     const data = await this.model.findAll({
       where,
       order,
+      limit,
+      offset,
     });
 
     if (!data) {
