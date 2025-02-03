@@ -45,33 +45,8 @@ export default class GenericService<T extends Model> {
     return data;
   }
 
-  async findAll({
-    where = {},
-    order = [['createdAt', 'DESC']],
-    offset = 0,
-    limit = 10,
-  }: {
-    where?: WhereOptions;
-    order?: [[string, 'ASC' | 'DESC']];
-    offset?: number;
-    limit?: number;
-  }): Promise<T[]> {
-    const modelAttribute = Object.keys(this.model.getAttributes());
-    order.map((val) => {
-      const [column] = val;
-      if (!modelAttribute.includes(column)) {
-        throw new HttpException(
-          'ORDER 컬럼 오류',
-          HttpStatus.INTERNAL_SERVER_ERROR,
-        );
-      }
-    });
-    const data = await this.model.findAll({
-      where,
-      order,
-      limit,
-      offset,
-    });
+  async findAll(options: FindOptions<T>): Promise<T[]> {
+    const data = await this.model.findAll(options);
 
     if (!data) {
       throw new HttpException('데이터 조회 오류', HttpStatus.NOT_FOUND);
