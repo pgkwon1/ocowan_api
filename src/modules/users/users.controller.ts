@@ -61,21 +61,22 @@ export class UsersController {
             login,
             github_id,
           });
-
-          data.levels = result.levels;
         } else {
           isRegister = true;
           data.access_token = access_token;
           result = await this.usersService.register(data);
         }
 
-        const { id } = result;
+        const { id, levels } = result;
         const token = await JwtUtilService.generateJwtToken(
           data.login,
           id,
           access_token,
           data.github_id,
         );
+        data.levels = levels;
+        data.users_id = id;
+
         await this.redisService.hashSetValue(`user:${data.login}`, {
           token,
         });
