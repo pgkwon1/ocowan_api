@@ -3,8 +3,6 @@ import BaseService from 'src/common/base.service';
 import { TeamModel } from './entities/team.model';
 import { WhereOptions, FindOptions } from 'sequelize';
 import { InjectModel } from '@nestjs/sequelize';
-import { TeamMemberModel } from './member/entities/member.model';
-import GithubModel from '../users/entities/users.model';
 
 @Injectable()
 export class TeamService implements BaseService<TeamModel> {
@@ -17,7 +15,6 @@ export class TeamService implements BaseService<TeamModel> {
       const result = await this.teamModel.create(data);
       return result;
     } catch (e) {
-      console.log(e);
       throw new HttpException('팀 생성에 실패하였습니다.', 400);
     }
   }
