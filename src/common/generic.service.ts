@@ -86,7 +86,7 @@ export default class GenericService<T extends Model> {
   async increment(
     increaseField: { [K in keyof ModelAttribute<T>]?: number },
     where: WhereOptions<T>,
-  ): Promise<T | Partial<T>> {
+  ): Promise<boolean | Partial<T>> {
     const instance = await this.findOne({
       where,
     });
@@ -102,13 +102,13 @@ export default class GenericService<T extends Model> {
       );
     }
 
-    return result;
+    return true;
   }
 
   async decrement(
     decreaseField: { [K in keyof ModelAttribute<T>]?: number },
     where: WhereOptions<T>,
-  ): Promise<boolean> {
+  ): Promise<boolean | Partial<T>> {
     const instance = await this.findOne({
       where,
     });
@@ -143,9 +143,9 @@ export default class GenericService<T extends Model> {
       await this.transaction.commit();
       this.transaction = null;
     } catch (error) {
+      console.log('err', error);
       await this.transaction.rollback();
       this.transaction = null;
-
       throw new HttpException(
         '처리 중 오류가 발생하였습니다.',
         HttpStatus.INTERNAL_SERVER_ERROR,
