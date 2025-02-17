@@ -6,6 +6,7 @@ import {
   Param,
   Patch,
   Post,
+  Query,
   UseGuards,
 } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
@@ -19,19 +20,59 @@ import { FindOptions, Sequelize } from 'sequelize';
 import UsersModel from '../users/entities/users.model';
 import { v4 as uuidv4 } from 'uuid';
 import { RedisService } from '../redis/redis.service';
-import { EmotifyService } from './emotify/emotify.service';
 
 @Controller('tils')
 export class TilController {
   constructor(
     private readonly tilService: TilService,
     private readonly redisService: RedisService,
-    private readonly emotifyService: EmotifyService,
   ) {}
   @UseGuards(AuthGuard('jwt'))
-  @Get('/')
-  async getAll(): Promise<TilModel[]> {
-    return await this.tilService.findAll();
+  @Get('/page/:page')
+  async getAll(
+    @Param('page') page: number = 1,
+    @Query('category') category: string,
+    @Query('order') order: 'createdAt' | 'viewCnt' | 'commentsCnt',
+  ): Promise<{ tilList: TilModel[]; totalCount: number }> {
+    const where = category !== '전체' ? { category } : {};
+    const limit = 10;
+    const options: FindOptions<TilModel> = {
+      where,
+      limit,
+      offset: (page - 1) * limit,
+      attributes: [
+        'title',
+        'slug',
+        'thumbsUpCnt',
+        'heartCnt',
+        'smileCnt',
+        'fireCnt',
+        'ideaCnt',
+        'viewCnt',
+        'commentsCnt',
+        'category',
+        'createdAt',
+      ],
+      order: [[order, 'DESC']],
+      include: [
+        {
+          model: UsersModel,
+          as: 'users',
+          attributes: ['avatar_url', 'followers', 'following', 'login'],
+        },
+      ],
+    };
+
+    const totalCount = await this.tilService.count({
+      where,
+    });
+
+    const tilList = await this.tilService.findAll(options);
+
+    return {
+      tilList,
+      totalCount,
+    };
   }
 
   @UseGuards(AuthGuard('jwt'))
@@ -51,7 +92,7 @@ export class TilController {
         },
         {
           model: UsersModel,
-          attributes: ['login', 'avatar_url', 'followers', 'bio'],
+          attributes: ['login', 'avatar_url', 'following', 'followers', 'bio'],
         },
       ],
     };
@@ -77,8 +118,7 @@ export class TilController {
     @Jwt() token: JwtEntity,
   ): Promise<string> {
     /* til slug 생성 제목-임의 12개 문자열 조합 */
-    data.slug = data.title.replaceAll(' ', '-').replaceAll('_', '-');
-    data.slug = `${data.slug}-${uuidv4().replace(/-/g, '').substring(0, 12)}`; // 첫 12자리만 반환
+    data.slug = `${uuidv4().replace(/-/g, '').substring(0, 12)}`; // 첫 12자리만 반환
 
     const createData = {
       ...data,
@@ -88,33 +128,32 @@ export class TilController {
   }
 
   @UseGuards(AuthGuard('jwt'))
-  @Patch('/:id/edit')
+  @Patch('/:id')
   async update(
-    @Body() updatedData: Partial<TilModel>,
+    @Body() editData: Partial<TilModel>,
     @Param('id') id: string,
-  ): Promise<boolean> {
-    return await this.tilService.update(updatedData, {
+  ): Promise<{
+    title: string;
+    slug: string;
+  }> {
+    const updatedData = await this.tilService.update(editData, {
       id,
     });
+
+    return {
+      title: editData.title,
+      slug: updatedData.slug,
+    };
   }
 
   @UseGuards(AuthGuard('jwt'))
   @Delete('/:id')
   async delete(@Param('id') id: string) {
-    const transactionList: Array<() => Promise<void>> = [
-      async () =>
-        await this.emotifyService.delete({
-          where: {
-            til_id: id,
-          },
-        }),
-      async () =>
-        await this.tilService.delete({
-          where: {
-            id,
-          },
-        }),
-    ];
-    return await this.tilService.executeTransaction(transactionList);
+    const options = {
+      where: {
+        id,
+      },
+    };
+    return await this.tilService.delete(options, id);
   }
 }

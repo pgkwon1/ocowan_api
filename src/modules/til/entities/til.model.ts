@@ -11,6 +11,7 @@ import {
 import { TilCreateAttrDto } from './til.entity';
 import EmotifyModel from './emotify.model';
 import UsersModel from 'src/modules/users/entities/users.model';
+import CommentsModel from './comments.model';
 
 export enum TIL_CATEGORY {
   '프로그래밍 언어',
@@ -92,9 +93,17 @@ export default class TilModel extends Model<TilAttribute, TilCreationAttrDao> {
   })
   readonly viewCnt: number;
 
+  @Column({
+    defaultValue: 0,
+  })
+  readonly commentsCnt: number;
+
   @HasMany(() => EmotifyModel, 'til_id')
-  readonly emotify: EmotifyModel[];
+  emotify: EmotifyModel[];
 
   @BelongsTo(() => UsersModel, 'users_id')
   readonly users: UsersModel;
+
+  @HasMany(() => CommentsModel, 'til_id')
+  readonly comments: CommentsModel[];
 }

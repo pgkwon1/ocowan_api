@@ -89,7 +89,7 @@ export class EmotifyController {
     }
     const transactionList = [
       async () => await this.emotifyService.delete({ where }),
-      async () =>
+      async () => {
         await this.tilService.decrement(
           {
             [`${type}Cnt`]: 1,
@@ -98,7 +98,9 @@ export class EmotifyController {
           {
             id: til_id,
           },
-        ),
+        );
+        return true;
+      },
     ];
 
     await this.emotifyService.executeTransactionNonOrder(transactionList);

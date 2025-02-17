@@ -27,6 +27,7 @@ import { ConfigModule } from '@nestjs/config';
 import { StorageModule } from './modules/storage/stroage.module';
 import TilModel from './modules/til/entities/til.model';
 import EmotifyModel from './modules/til/entities/emotify.model';
+import CommentsModel from './modules/til/entities/comments.model';
 
 dotenv.config();
 
@@ -56,6 +57,7 @@ dotenv.config();
         LevelsLogsModel,
         TilModel,
         EmotifyModel,
+        CommentsModel,
       ],
     }),
 
