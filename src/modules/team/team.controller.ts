@@ -86,7 +86,7 @@ export class TeamController {
 
     const { rows, count } =
       await this.teamMemberService.getAllAndCount(findOption);
-    const teamList = count > 0 && rows.map((data) => data.team);
+    const teamList = count > 0 ? rows.map((data) => data.team) : [];
     return {
       teamList,
       count,
