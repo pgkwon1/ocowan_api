@@ -1,0 +1,19 @@
+name: deploy api
+on: 
+  push:
+    branches: [ master ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name : pull source code
+        uses: actions/checkout@v4
+  
+      - name: package install
+        run: npm install
+
+      - name: build project
+        run: npm rum build
+    
+    
