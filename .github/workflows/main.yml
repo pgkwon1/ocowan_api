@@ -1,4 +1,10 @@
 name: deploy api
+env:
+  HOST: ${{ secrets.LIGHTSAIL_HOST }}
+  REGION: ${{ secrets.LIGHTSAIL_REGION }}
+  USERNAME: ${{ secrets.LIGHTSAIL_USER }}
+  SSH_KEY: LIGHTSAIL_SECRET_KEY
+  
 on: 
   push:
     branches: [ master ]
@@ -15,5 +21,4 @@ jobs:
 
       - name: build project
         run: npm rum build
-    
     
