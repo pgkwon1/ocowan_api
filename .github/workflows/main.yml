@@ -1,0 +1,24 @@
+name: deploy api
+env:
+  HOST: ${{ secrets.LIGHTSAIL_HOST }}
+  REGION: ${{ secrets.LIGHTSAIL_REGION }}
+  USERNAME: ${{ secrets.LIGHTSAIL_USER }}
+  SSH_KEY: LIGHTSAIL_SECRET_KEY
+  
+on: 
+  push:
+    branches: [ master ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name : pull source code
+        uses: actions/checkout@v4
+  
+      - name: package install
+        run: npm install
+
+      - name: build project
+        run: npm rum build
+    
