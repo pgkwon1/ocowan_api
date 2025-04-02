@@ -33,8 +33,12 @@ export class TilController {
     @Param('page') page: number = 1,
     @Query('category') category: string,
     @Query('order') order: 'createdAt' | 'viewCnt' | 'commentsCnt',
+    @Query('users_id') users_id?: string,
   ): Promise<{ tilList: TilModel[]; totalCount: number }> {
-    const where = category !== '전체' ? { category } : {};
+    const where = {
+      ...(category !== '전체' && { category }),
+      ...(users_id && { users_id }),
+    };
     const limit = 10;
     const options: FindOptions<TilModel> = {
       where,
@@ -52,6 +56,7 @@ export class TilController {
         'commentsCnt',
         'category',
         'createdAt',
+        'contents',
       ],
       order: [[order, 'DESC']],
       include: [
