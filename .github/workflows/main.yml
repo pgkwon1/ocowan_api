@@ -34,7 +34,7 @@ jobs:
       - name: deploy latest commit
         uses: appleboy/ssh-action@master
         with:
-          host: ${{ env.LIGHTSAIL_HOST }}
+          host: ${{ env.HOST }}
           username: ${{env.USERNAME}}
           key: ${{ env.SSH_KEY }}
           script: |
