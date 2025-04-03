@@ -6,6 +6,7 @@ env:
   SSH_KEY: ${{ secrets.LIGHTSAIL_SECRET_KEY }}
   API_DIRECTORY: ${{ secrets.API_DIRECTORY }}
   INSTANCE_NAME: ${{ secrets.INSTANCE_NAME }}
+  NODE_VERSION: ${{ secrets.NODE_VERSION }}
 on:
   push:
     branches: [master]
@@ -39,12 +40,12 @@ jobs:
         uses: appleboy/ssh-action@master
         with:
           host: ${{ env.HOST }}
-          username: ${{env.USERNAME}}
+          username: ${{ env.USERNAME }}
           key: ${{ env.SSH_KEY }}
           script: |
             export NVM_DIR="$HOME/.nvm"
             [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
-            nvm use 20.17.0 
+            nvm use ${{ env.NODE_VERSION }} 
             cd ${{ env.API_DIRECTORY }}
             git pull origin master
             npm install
