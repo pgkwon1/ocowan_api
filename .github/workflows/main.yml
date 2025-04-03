@@ -4,7 +4,8 @@ env:
   REGION: ${{ secrets.LIGHTSAIL_REGION }}
   USERNAME: ${{ secrets.LIGHTSAIL_USER }}
   SSH_KEY: ${{ secrets.LIGHTSAIL_SECRET_KEY }}
-
+  API_DIRECTORY: ${{ secrets.API_DIRECTORY }}
+  INSTANCE_NAME: ${{ secrets.INSTANCE_NAME }}
 on:
   push:
     branches: [master]
@@ -13,6 +14,10 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
+      - name: install node v20
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
       - name: pull source code
         uses: actions/checkout@v4
 
@@ -21,3 +26,19 @@ jobs:
 
       - name: build project
         run: npm rum build
+
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: deploy latest commit
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ env.LIGHTSAIL_HOS }}
+          username: ${{env.USERNAME}}
+          key: ${{ env.SSH_KEY }}
+          script: |
+            cd ${{ env.API_DIRECTORY }}
+            git pull origin master
+            npm install
+            npm run build
+            pm2 restart ${{ env.INSTANCE_NAME }}
