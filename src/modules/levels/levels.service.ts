@@ -33,10 +33,13 @@ export default class LevelsService extends GenericService<LevelsModel> {
     }
     exp += increaseField.exp;
 
-    await super.increment(increaseField, {
-      exp: increaseField.exp,
-      level: increaseField.level ?? 0,
-    });
+    await super.increment(
+      {
+        exp: increaseField.exp,
+        level: increaseField.level ?? 0,
+      },
+      where,
+    );
     await this.logsService.create({
       users_id: where['users_id'],
       exp: increaseField['exp'],
