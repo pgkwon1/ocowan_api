@@ -18,10 +18,12 @@ export default class AuthService {
    * 토큰을 decode 한 후 실제로 db에 유저가 존재하는지 검사.
    */
   async validateUser(payload): Promise<boolean> {
-    const result = await this.usersService.isUser(
-      payload.login,
-      payload.github_id,
-    );
+    const result = await this.usersService.findOne({
+      where: {
+        login: payload.login,
+        github_id: payload.github_id,
+      },
+    });
     if (!result) {
       throw new GithubNotFoundException('Unauthorized user', 401);
     }
