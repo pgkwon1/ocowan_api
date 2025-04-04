@@ -16,6 +16,8 @@ import { AuthGuard } from '@nestjs/passport';
 import { Jwt } from 'src/decorators/jwt.decorator';
 import { JwtEntity } from '../auth/entities/jwt.entity';
 import LevelsService from '../levels/levels.service';
+import { Sequelize } from 'sequelize-typescript';
+import { FindOptions, Op } from 'sequelize';
 
 @Controller('ocowan')
 export class OcowanController {
@@ -74,14 +76,20 @@ export class OcowanController {
     const { id: users_id } = token;
     const ocowan_date = moment().format('YYYY-MM-DD');
 
-    const isOcowan = await this.ocowanService.isOcowan(users_id, ocowan_date);
+    const isOcowan = await this.ocowanService.count({
+      where: {
+        users_id,
+        ocowan_date,
+      },
+    });
 
     if (isOcowan > 0) {
       throw new HttpException('이미 오코완 되었습니다', 400);
     }
+
     const result = await this.ocowanService.create({
-      users_id,
       ocowan_date,
+      users_id,
       total_count,
     });
 
@@ -95,7 +103,25 @@ export class OcowanController {
   @Get('/:login')
   async getAllOcowan(@Jwt() token: JwtEntity) {
     const { id: users_id } = token;
-    const result = await this.ocowanService.getAllOcowan(users_id);
+    const startDay = moment().startOf('month').format('YYYY-MM-DD');
+    const endDay = moment().endOf('month').format('YYYY-MM-DD');
+    const findOptions: FindOptions = {
+      attributes: [
+        'ocowan_date',
+        [Sequelize.literal('ANY_VALUE(total_count)'), 'total_count'],
+      ],
+      raw: true,
+      where: {
+        users_id,
+        ocowan_date: {
+          [Op.between]: [startDay, endDay],
+        },
+      },
+
+      group: ['ocowan_date'],
+    };
+
+    const result = await this.ocowanService.findAll(findOptions);
     return result;
   }
 }
