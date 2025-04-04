@@ -14,11 +14,8 @@ type ModelAttribute<T extends Model> = InferAttributes<T>;
  * E : 엔티티 클래스 파일
  */
 export default class GenericService<T extends Model> {
-  private readonly model: ModelCtor<T>;
   private transaction: Transaction;
-  constructor(model: ModelCtor<T>) {
-    this.model = model;
-  }
+  constructor(private readonly model: ModelCtor<T>) {}
 
   async create(data: T['_creationAttributes']): Promise<T> {
     const result = await this.model.create(data, {
