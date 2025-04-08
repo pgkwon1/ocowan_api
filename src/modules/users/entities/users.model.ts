@@ -11,13 +11,16 @@ import {
 } from 'sequelize-typescript';
 import BigThreeModel from 'src/modules/bigthree/entities/bigthree.model';
 import { LevelsModel } from 'src/modules/levels/entities/levels.model';
+import OcowanModel from 'src/modules/ocowan/entities/ocowan.model';
 import { TeamMemberModel } from 'src/modules/team/member/entities/member.model';
+import TilModel from 'src/modules/til/entities/til.model';
 
+interface UserCreationAttr extends Omit<UsersModel, 'id'> {}
 @Table({
   modelName: 'users',
   tableName: 'users',
 })
-export default class UsersModel extends Model<UsersModel> {
+export default class UsersModel extends Model<UsersModel, UserCreationAttr> {
   @PrimaryKey
   @Column({
     defaultValue: UUIDV4(),
@@ -63,6 +66,9 @@ export default class UsersModel extends Model<UsersModel> {
   @UpdatedAt
   readonly updatedAt: Date;
 
+  @HasMany(() => OcowanModel, 'users_id')
+  readonly ocowan: OcowanModel;
+
   @HasMany(() => BigThreeModel, 'users_id')
   readonly bigthree: BigThreeModel;
 
@@ -71,4 +77,7 @@ export default class UsersModel extends Model<UsersModel> {
 
   @HasOne(() => LevelsModel, 'users_id')
   readonly levels: LevelsModel;
+
+  @HasMany(() => TilModel, 'users_id')
+  readonly til: TilModel;
 }
