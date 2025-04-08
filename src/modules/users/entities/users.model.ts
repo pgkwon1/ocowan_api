@@ -1,4 +1,4 @@
-import { UUIDV4 } from 'sequelize';
+import { InferAttributes, UUIDV4 } from 'sequelize';
 import {
   Column,
   CreatedAt,
@@ -15,7 +15,8 @@ import OcowanModel from 'src/modules/ocowan/entities/ocowan.model';
 import { TeamMemberModel } from 'src/modules/team/member/entities/member.model';
 import TilModel from 'src/modules/til/entities/til.model';
 
-interface UserCreationAttr extends Omit<UsersModel, 'id'> {}
+interface UserAttributes extends InferAttributes<UsersModel> {}
+interface UserCreationAttr extends Omit<UserAttributes, 'id'> {}
 @Table({
   modelName: 'users',
   tableName: 'users',

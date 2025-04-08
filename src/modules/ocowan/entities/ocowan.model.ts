@@ -1,11 +1,16 @@
-import { UUIDV4 } from 'sequelize';
+import { InferAttributes, UUIDV4 } from 'sequelize';
 import { Column, Model, PrimaryKey, Table } from 'sequelize-typescript';
 
+export interface OcowanAttributes extends InferAttributes<OcowanModel> {}
+export interface OcowanCreateAttr extends Omit<OcowanAttributes, 'id'> {}
 @Table({
   modelName: 'ocowan',
   tableName: 'ocowan',
 })
-export default class OcowanModel extends Model<OcowanModel> {
+export default class OcowanModel extends Model<
+  OcowanAttributes,
+  OcowanCreateAttr
+> {
   @PrimaryKey
   @Column({
     defaultValue: UUIDV4(),
