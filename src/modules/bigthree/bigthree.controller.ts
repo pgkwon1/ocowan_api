@@ -1,29 +1,18 @@
-import { Controller, Get, Post, UseGuards } from '@nestjs/common';
+import { Controller, Get, Param, Post, UseGuards } from '@nestjs/common';
 import { BigthreeService } from './bigthree.service';
 import { Jwt } from 'src/decorators/jwt.decorator';
 import { JwtEntity } from '../auth/entities/jwt.entity';
 import { AuthGuard } from '@nestjs/passport';
 import { HttpService } from '@nestjs/axios';
 import { FindOptions, Sequelize } from 'sequelize';
+import UsersService from '../users/users.service';
 @Controller('bigthrees')
 export class BigthreeController {
   constructor(
     private readonly bigthreeService: BigthreeService,
+    private readonly usersService: UsersService,
     private readonly httpService: HttpService,
   ) {}
-
-  @Get()
-  @UseGuards(AuthGuard('jwt'))
-  async getBigthree(@Jwt() token: JwtEntity) {
-    const { id: users_id } = token;
-    const result = await this.bigthreeService.getOne({
-      where: {
-        users_id,
-      },
-    });
-
-    return result;
-  }
 
   @Get('weekly')
   @UseGuards(AuthGuard('jwt'))
@@ -49,6 +38,26 @@ export class BigthreeController {
     const result = (await this.bigthreeService.getAll(findOptions)).sort(
       () => -1,
     );
+    return result;
+  }
+
+  @Get(['', ':login'])
+  @UseGuards(AuthGuard('jwt'))
+  async getBigthree(@Param('login') login: string, @Jwt() token: JwtEntity) {
+    let users_id;
+    // 들어온 라우팅에 따라 분기를 나눠 where절 설정
+    if (login) {
+      users_id = (await this.usersService.findOne({ where: { login } })).id;
+    } else {
+      users_id = token.id;
+    }
+
+    const result = await this.bigthreeService.getOne({
+      where: {
+        users_id,
+      },
+    });
+
     return result;
   }
 
