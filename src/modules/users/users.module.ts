@@ -8,12 +8,21 @@ import { RedisService } from '../redis/redis.service';
 import LevelsService from '../levels/levels.service';
 import { LevelsModel } from '../levels/entities/levels.model';
 import { LevelsModule } from '../levels/levels.module';
+import TilModel from '../til/entities/til.model';
+import OcowanModel from '../ocowan/entities/ocowan.model';
+import BigThreeModel from '../bigthree/entities/bigthree.model';
 
 @Module({
   imports: [
     HttpModule,
     LevelsModule,
-    SequelizeModule.forFeature([UsersModel, LevelsModel]),
+    SequelizeModule.forFeature([
+      UsersModel,
+      LevelsModel,
+      TilModel,
+      OcowanModel,
+      BigThreeModel,
+    ]),
   ],
   controllers: [UsersController],
   providers: [UsersService, RedisService, UsersService, LevelsService],
