@@ -1,17 +1,19 @@
-import { forwardRef, Inject, Injectable } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import GenericService from 'src/common/generic.service';
 import TilModel from './entities/til.model';
-import { EmotifyService } from './emotify/emotify.service';
 import { FindOptions } from 'sequelize';
 
-import { CommentsService } from './comments/comments/comments.service';
+import CommentsModel from './entities/comments.model';
+import { InjectModel } from '@nestjs/sequelize';
+import EmotifyModel from './entities/emotify.model';
 
 @Injectable()
 export class TilService extends GenericService<TilModel> {
   constructor(
-    private readonly emotifyService: EmotifyService,
-    @Inject(forwardRef(() => CommentsService))
-    private readonly commentsService: CommentsService,
+    @InjectModel(CommentsModel)
+    private readonly commentsModel: typeof CommentsModel,
+    @InjectModel(EmotifyModel)
+    private readonly emotifyModel: typeof EmotifyModel,
   ) {
     super(TilModel);
   }
@@ -32,12 +34,25 @@ export class TilService extends GenericService<TilModel> {
         til_id: foreignKey,
       },
     };
+
+    /**
+     *
+     * 트랜잭션 실행 중 트랜잭션 중복 실행(comments 삭제 처리할 때)을 막기 위해 별도의 메소드에서 삭제 처리.
+     */
     const transactionList: Array<() => Promise<void>> = [
       async () => await super.delete(options),
-      async () => await this.emotifyService.delete(otherOptions),
-      async () => await this.commentsService.delete(otherOptions, foreignKey),
+      async () => await this.emotifyDelete(otherOptions),
+      async () => await this.commentsDelete(otherOptions),
     ];
 
     return await this.executeTransaction(transactionList);
+  }
+
+  async emotifyDelete(options: FindOptions) {
+    await this.emotifyModel.destroy(options);
+  }
+
+  async commentsDelete(options: FindOptions) {
+    await this.commentsModel.destroy(options);
   }
 }
