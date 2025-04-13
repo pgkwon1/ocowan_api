@@ -8,5 +8,6 @@ dotenv.config();
 @Global()
 @Module({
   providers: [RedisService],
+  exports: [RedisService],
 })
 export class RedisModule {}

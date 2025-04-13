@@ -5,7 +5,7 @@ import { HttpModule } from '@nestjs/axios';
 import { SequelizeModule } from '@nestjs/sequelize';
 import BigThreeModel from './entities/bigthree.model';
 import UsersModel from '../users/entities/users.model';
-import UsersService from '../users/users.service';
+import { UsersModule } from '../users/users.module';
 
 @Module({
   imports: [
@@ -16,8 +16,10 @@ import UsersService from '../users/users.service';
     }),
 
     SequelizeModule.forFeature([BigThreeModel, UsersModel]),
+    UsersModule,
   ],
   controllers: [BigthreeController],
-  providers: [BigthreeService, UsersService],
+  providers: [BigthreeService],
+  exports: [BigthreeService],
 })
 export class BigthreeModule {}

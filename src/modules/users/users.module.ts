@@ -5,7 +5,6 @@ import UsersService from './users.service';
 import UsersModel from './entities/users.model';
 import { SequelizeModule } from '@nestjs/sequelize';
 import { RedisService } from '../redis/redis.service';
-import LevelsService from '../levels/levels.service';
 import { LevelsModel } from '../levels/entities/levels.model';
 import { LevelsModule } from '../levels/levels.module';
 import TilModel from '../til/entities/til.model';
@@ -25,6 +24,7 @@ import BigThreeModel from '../bigthree/entities/bigthree.model';
     ]),
   ],
   controllers: [UsersController],
-  providers: [UsersService, RedisService, UsersService, LevelsService],
+  providers: [UsersService, RedisService],
+  exports: [UsersService],
 })
 export class UsersModule {}

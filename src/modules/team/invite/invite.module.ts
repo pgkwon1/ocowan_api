@@ -9,5 +9,6 @@ import { TeamModel } from '../entities/team.model';
   imports: [SequelizeModule.forFeature([TeamInviteModel, TeamModel])],
   providers: [TeamInviteService],
   controllers: [InviteController],
+  exports: [TeamInviteService],
 })
 export class TeamInviteModule {}
