@@ -153,10 +153,11 @@ export class TilController {
 
   @UseGuards(AuthGuard('jwt'))
   @Delete('/:id')
-  async delete(@Param('id') id: string) {
+  async delete(@Param('id') id: string, @Jwt() token: JwtEntity) {
     const options = {
       where: {
         id,
+        users_id: token.id,
       },
     };
     return await this.tilService.delete(options, id);
