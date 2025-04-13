@@ -35,7 +35,7 @@ export class TilService extends GenericService<TilModel> {
     const transactionList: Array<() => Promise<void>> = [
       async () => await this.emotifyService.delete(otherOptions),
       async () => await super.delete(options),
-      async () => await this.commentsService.delete(otherOptions),
+      async () => await this.commentsService.delete(otherOptions, foreignKey),
     ];
 
     return await this.executeTransaction(transactionList);
