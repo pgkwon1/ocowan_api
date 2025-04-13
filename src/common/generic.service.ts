@@ -70,7 +70,7 @@ export default class GenericService<T extends Model> {
   }
 
   async delete(options: FindOptions<T>): Promise<void> {
-    const instance = await this.model.findOne(options);
+    const instance = await this.findOne(options);
 
     if (instance) {
       await instance.destroy({
