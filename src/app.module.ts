@@ -1,6 +1,4 @@
-import { Module } from '@nestjs/common';
-import { AppController } from './app.controller';
-import { AppService } from './app.service';
+import { Logger, Module } from '@nestjs/common';
 import { UsersModule } from './modules/users/users.module';
 import { SequelizeModule } from '@nestjs/sequelize';
 import { AuthModule } from './modules/auth/auth.module';
@@ -28,6 +26,9 @@ import { StorageModule } from './modules/storage/stroage.module';
 import TilModel from './modules/til/entities/til.model';
 import EmotifyModel from './modules/til/entities/emotify.model';
 import CommentsModel from './modules/til/entities/comments.model';
+import { APP_FILTER, APP_INTERCEPTOR } from '@nestjs/core';
+import { HttpExceptionFilter, TypeErrorFilter } from './common/common.catch';
+import { ResponseInterceptor } from './interceptors/response.interceptor';
 
 dotenv.config();
 
@@ -83,7 +84,21 @@ dotenv.config();
     TilModule,
     StorageModule,
   ],
-  controllers: [AppController],
-  providers: [AppService],
+  controllers: [],
+  providers: [
+    {
+      provide: APP_FILTER,
+      useClass: HttpExceptionFilter,
+    },
+    {
+      provide: APP_FILTER,
+      useClass: TypeErrorFilter,
+    },
+    {
+      provide: APP_INTERCEPTOR,
+      useClass: ResponseInterceptor,
+    },
+    Logger,
+  ],
 })
 export class AppModule {}
