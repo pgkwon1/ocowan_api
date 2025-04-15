@@ -14,7 +14,7 @@ export class BigthreeController {
     private readonly httpService: HttpService,
   ) {}
 
-  @Get('weekly')
+  @Get('latest')
   @UseGuards(AuthGuard('jwt'))
   async getWeekly(@Jwt() token: JwtEntity) {
     const { id: users_id } = token;
