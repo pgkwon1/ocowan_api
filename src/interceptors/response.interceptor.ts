@@ -18,7 +18,7 @@ export class ResponseInterceptor implements NestInterceptor {
     context: ExecutionContext,
     next: CallHandler<any>,
   ): Observable<any> {
-    const { statusCode } = context.switchToHttp().getResponse().statusCode;
+    const { statusCode } = context.switchToHttp().getResponse();
     const request = context.switchToHttp().getRequest();
     this.logger.http(
       `request => url : ${request.url} method : ${request.method}`,
