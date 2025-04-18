@@ -3,7 +3,6 @@ import { BigthreeService } from './bigthree.service';
 import { Jwt } from 'src/decorators/jwt.decorator';
 import { JwtEntity } from '../auth/entities/jwt.entity';
 import { AuthGuard } from '@nestjs/passport';
-import { HttpService } from '@nestjs/axios';
 import { FindOptions, Sequelize } from 'sequelize';
 import UsersService from '../users/users.service';
 @Controller('bigthrees')
@@ -11,12 +10,11 @@ export class BigthreeController {
   constructor(
     private readonly bigthreeService: BigthreeService,
     private readonly usersService: UsersService,
-    private readonly httpService: HttpService,
   ) {}
 
   @Get('latest')
   @UseGuards(AuthGuard('jwt'))
-  async getWeekly(@Jwt() token: JwtEntity) {
+  async getLatestBigThree(@Jwt() token: JwtEntity) {
     const { id: users_id } = token;
     const findOptions: FindOptions = {
       where: {
@@ -35,7 +33,7 @@ export class BigthreeController {
       group: ['createdAt'],
       limit: 7,
     };
-    const result = (await this.bigthreeService.getAll(findOptions)).sort(
+    const result = (await this.bigthreeService.findAll(findOptions)).sort(
       () => -1,
     );
     return result;
@@ -52,7 +50,7 @@ export class BigthreeController {
       users_id = token.id;
     }
 
-    const result = await this.bigthreeService.getOne({
+    const result = await this.bigthreeService.findOne({
       where: {
         users_id,
       },
@@ -65,15 +63,15 @@ export class BigthreeController {
   @UseGuards(AuthGuard('jwt'))
   async createBigthree(@Jwt() token: JwtEntity): Promise<boolean> {
     const { id: users_id, login, access_token } = token;
-    this.bigthreeService.login = login;
-    this.bigthreeService.accessToken = access_token;
 
     const { pullReqCount, issueCount } =
-      await this.bigthreeService.getPullCountAndIssueCount();
-    const commitCount = await this.bigthreeService.getCommitCount();
+      await this.bigthreeService.getPullCountAndIssueCount(login, access_token);
+    const commitCount = await this.bigthreeService.getCommitCount(
+      login,
+      access_token,
+    );
 
     await this.bigthreeService.create({
-      login,
       users_id,
       pullReqCount,
       issueCount,

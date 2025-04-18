@@ -1,4 +1,4 @@
-import { UUIDV4 } from 'sequelize';
+import { InferAttributes, UUIDV4 } from 'sequelize';
 import {
   Column,
   ForeignKey,
@@ -8,11 +8,16 @@ import {
 } from 'sequelize-typescript';
 import UsersModel from 'src/modules/users/entities/users.model';
 
+interface BigThreeAttributes extends InferAttributes<BigThreeModel> {}
+interface BigThreeCreationAttr extends Omit<BigThreeAttributes, 'id'> {}
 @Table({
   modelName: 'bigthree',
   tableName: 'bigthree',
 })
-export default class BigThreeModel extends Model<BigThreeModel> {
+export default class BigThreeModel extends Model<
+  BigThreeModel,
+  BigThreeCreationAttr
+> {
   @PrimaryKey
   @Column({
     defaultValue: UUIDV4(),
