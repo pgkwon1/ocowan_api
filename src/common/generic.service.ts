@@ -51,6 +51,16 @@ export default class GenericService<T extends Model> {
     return data;
   }
 
+  async findAndCountAll(
+    options: FindOptions<T>,
+  ): Promise<{ rows: T[]; count: number }> {
+    const { rows, count } = await this.model.findAndCountAll(options);
+    return {
+      rows,
+      count,
+    };
+  }
+
   async count(options: FindOptions<T>): Promise<number> {
     return await this.model.count(options);
   }
