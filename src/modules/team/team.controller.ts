@@ -22,7 +22,7 @@ import { Jwt } from 'src/decorators/jwt.decorator';
 import { JwtEntity } from '../auth/entities/jwt.entity';
 import { TeamModel } from './entities/team.model';
 import * as moment from 'moment-timezone';
-import { AzureService } from '../azure/azure.service';
+
 import { v4 as uuidv4 } from 'uuid';
 import UsersModel from '../users/entities/users.model';
 import { TeamMemberModel } from './member/entities/member.model';
@@ -40,7 +40,7 @@ export class TeamController {
   @UseGuards(AuthGuard('jwt'))
   @Get('/info/:id')
   async getTeamInfo(@Param('id') id: string) {
-    const result = await this.teamService.getOne({
+    const result = await this.teamService.findOne({
       where: {
         id,
       },
@@ -85,7 +85,7 @@ export class TeamController {
     };
 
     const { rows, count } =
-      await this.teamMemberService.getAllAndCount(findOption);
+      await this.teamMemberService.findAndCountAll(findOption);
     const teamList = count > 0 ? rows.map((data) => data.team) : [];
     return {
       teamList,
@@ -103,7 +103,7 @@ export class TeamController {
       },
     };
 
-    const teamMember = await this.teamMemberService.getAll(findOption);
+    const teamMember = await this.teamMemberService.findAll(findOption);
     const bigThreeFindOptions: FindOptions = {
       attributes: [
         'createdAt',
@@ -124,7 +124,7 @@ export class TeamController {
         bigThreeFindOptions.where = {
           users_id,
         };
-        return await this.bigThreeService.getAll(bigThreeFindOptions);
+        return await this.bigThreeService.findAll(bigThreeFindOptions);
       }),
     );
 
@@ -152,9 +152,11 @@ export class TeamController {
 
     const result = await this.teamService.create(data);
 
+    /* 팀 멤버(본인) 생성 */
     await this.teamMemberService.create({
       team_id: result.id,
       users_id,
+      leader_yn: true,
       join_date: moment().format('YYYY-mm-dd'),
     });
     return result;

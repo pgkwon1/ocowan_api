@@ -1,7 +1,8 @@
 import { Body, Controller, Get, Param, Post, UseGuards } from '@nestjs/common';
-import { TeamInviteService } from '../invite.service';
+import { TeamInviteService } from './invite.service';
 import { AuthGuard } from '@nestjs/passport';
 import * as moment from 'moment-timezone';
+import { TeamModel } from '../entities/team.model';
 
 @Controller('invites')
 export default class InviteController {
@@ -10,10 +11,16 @@ export default class InviteController {
   @UseGuards(AuthGuard('jwt'))
   @Get('/team/:token')
   async getInvite(@Param('token') token: string) {
-    const result = await this.teamInvite.getOne({
+    const result = await this.teamInvite.findOne({
       where: {
         token,
       },
+      include: [
+        {
+          model: TeamModel,
+          attributes: ['id', 'name', 'description', 'leader', 'member_count'],
+        },
+      ],
     });
 
     return result;

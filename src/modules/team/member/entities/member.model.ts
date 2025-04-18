@@ -1,4 +1,4 @@
-import { UUIDV4 } from 'sequelize';
+import { InferAttributes, UUIDV4 } from 'sequelize';
 import { TeamModel } from '../../entities/team.model';
 import {
   BelongsTo,
@@ -12,11 +12,17 @@ import {
 } from 'sequelize-typescript';
 import UsersModel from 'src/modules/users/entities/users.model';
 
+interface TeamMemberAttributes extends InferAttributes<TeamMemberModel> {}
+interface TeamMemberCreationAttr
+  extends Omit<TeamMemberAttributes, 'id' | 'team' | 'users'> {}
 @Table({
   tableName: 'team_member',
   modelName: 'team_member',
 })
-export class TeamMemberModel extends Model<TeamMemberModel> {
+export class TeamMemberModel extends Model<
+  TeamMemberAttributes,
+  TeamMemberCreationAttr
+> {
   @PrimaryKey
   @Column({
     defaultValue: UUIDV4(),
@@ -40,10 +46,10 @@ export class TeamMemberModel extends Model<TeamMemberModel> {
   readonly leader_yn: boolean;
 
   @CreatedAt
-  readonly createdAt: Date;
+  readonly createdAt?: Date;
 
   @UpdatedAt
-  readonly updatedAt: Date;
+  readonly updatedAt?: Date;
 
   @BelongsTo(() => TeamModel, 'team_id')
   readonly team: TeamModel;

@@ -1,4 +1,4 @@
-import { UUIDV4 } from 'sequelize';
+import { InferAttributes, UUIDV4 } from 'sequelize';
 import {
   Column,
   CreatedAt,
@@ -11,11 +11,13 @@ import {
 import { TeamMemberModel } from '../member/entities/member.model';
 import { TeamInviteModel } from '../invite/entities/invite.model';
 
+interface TeamAttributes extends InferAttributes<TeamModel> {}
+interface TeamCreationAttr extends Omit<TeamAttributes, 'id'> {}
 @Table({
   modelName: 'team',
   tableName: 'team',
 })
-export class TeamModel extends Model<TeamModel> {
+export class TeamModel extends Model<TeamAttributes, TeamCreationAttr> {
   @PrimaryKey
   @Column({
     defaultValue: UUIDV4(),

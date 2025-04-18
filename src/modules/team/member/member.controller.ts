@@ -9,10 +9,7 @@ import {
 } from '@nestjs/common';
 import { TeamMemberService } from './member.service';
 import { AuthGuard } from '@nestjs/passport';
-import MemberEntity, {
-  MemberIsJoin,
-  MemberJoin,
-} from './entities/member.entity';
+import { MemberIsJoin, MemberJoin } from './entities/member.entity';
 import { TeamInviteService } from '../invite/invite.service';
 import * as moment from 'moment';
 import { Jwt } from 'src/decorators/jwt.decorator';
@@ -30,12 +27,14 @@ export default class TeamMemberController {
   async checkIsJoin(@Param() query: MemberIsJoin, @Jwt() token: JwtEntity) {
     const { team_id } = query;
     const { id } = token;
-    const findData = {
-      team_id,
-      users_id: id,
+    const options = {
+      where: {
+        team_id,
+        users_id: id,
+      },
     };
 
-    const result = await this.memberService.getOne(findData);
+    const result = await this.memberService.findOne(options);
     if (result) {
       throw new HttpException('이미 가입되어 있습니다.', 400);
     }
@@ -55,7 +54,7 @@ export default class TeamMemberController {
       },
     };
 
-    const { expire_time, team } = await this.inviteService.getOne(findData);
+    const { expire_time, team } = await this.inviteService.findOne(findData);
     const { leader } = team;
 
     if (leader === users_id) {
