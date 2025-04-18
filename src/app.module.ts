@@ -29,6 +29,7 @@ import CommentsModel from './modules/til/entities/comments.model';
 import { APP_FILTER, APP_INTERCEPTOR } from '@nestjs/core';
 import { HttpExceptionFilter, TypeErrorFilter } from './common/common.catch';
 import { ResponseInterceptor } from './interceptors/response.interceptor';
+import { ExternalApiModule } from './modules/external-api/external-api.module';
 
 dotenv.config();
 
@@ -83,6 +84,7 @@ dotenv.config();
     RedisModule,
     TilModule,
     StorageModule,
+    ExternalApiModule,
   ],
   controllers: [],
   providers: [
