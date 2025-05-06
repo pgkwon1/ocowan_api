@@ -42,6 +42,11 @@ export default class GenericService<T extends Model> {
     return data;
   }
 
+  async findOneOrNull(options: FindOptions<T>): Promise<T[]> {
+    const { rows, count } = await this.model.findAndCountAll(options);
+    return count > 1 ? rows : null;
+  }
+
   async findAll(options: FindOptions<T>): Promise<T[]> {
     const data = await this.model.findAll(options);
 
