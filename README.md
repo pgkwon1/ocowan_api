@@ -1,77 +1,115 @@
-<p align="center">
-<<<<<<< HEAD
-  <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="200" alt="Nest Logo" /></a>
-=======
-  <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="200" alt="Nest Logo " /></a>
->>>>>>> 2315a01cbb5c4c748e8da5853395d10a374c6aa6
-</p>
+# OCOWAN API
 
-[circleci-image]: https://img.shields.io/circleci/build/github/nestjs/nest/master?token=abc123def456
-[circleci-url]: https://circleci.com/gh/nestjs/nest
+NestJS 프레임워크를 기반으로 구축된 효율적이고 확장 가능한 서버 사이드 애플리케이션입니다.
 
-  <p align="center">A progressive <a href="http://nodejs.org" target="_blank">Node.js</a> framework for building efficient and scalable server-side applications.</p>
-    <p align="center">
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/v/@nestjs/core.svg" alt="NPM Version" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/l/@nestjs/core.svg" alt="Package License" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/dm/@nestjs/common.svg" alt="NPM Downloads" /></a>
-<a href="https://circleci.com/gh/nestjs/nest" target="_blank"><img src="https://img.shields.io/circleci/build/github/nestjs/nest/master" alt="CircleCI" /></a>
-<a href="https://coveralls.io/github/nestjs/nest?branch=master" target="_blank"><img src="https://coveralls.io/repos/github/nestjs/nest/badge.svg?branch=master#9" alt="Coverage" /></a>
-<a href="https://discord.gg/G7Qnnhy" target="_blank"><img src="https://img.shields.io/badge/discord-online-brightgreen.svg" alt="Discord"/></a>
-<a href="https://opencollective.com/nest#backer" target="_blank"><img src="https://opencollective.com/nest/backers/badge.svg" alt="Backers on Open Collective" /></a>
-<a href="https://opencollective.com/nest#sponsor" target="_blank"><img src="https://opencollective.com/nest/sponsors/badge.svg" alt="Sponsors on Open Collective" /></a>
-  <a href="https://paypal.me/kamilmysliwiec" target="_blank"><img src="https://img.shields.io/badge/Donate-PayPal-ff3f59.svg"/></a>
-    <a href="https://opencollective.com/nest#sponsor"  target="_blank"><img src="https://img.shields.io/badge/Support%20us-Open%20Collective-41B883.svg" alt="Support us"></a>
-  <a href="https://twitter.com/nestframework" target="_blank"><img src="https://img.shields.io/twitter/follow/nestframework.svg?style=social&label=Follow"></a>
-</p>
-  <!--[![Backers on Open Collective](https://opencollective.com/nest/backers/badge.svg)](https://opencollective.com/nest#backer)
-  [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
+## 소개
 
-## Description
+이 프로젝트는 [NestJS](https://github.com/nestjs/nest) 프레임워크를 사용한 TypeScript 기반 API 서버입니다.
+RESTful API 설계 패턴을 따르고 있습니다.
 
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
+## 기술 스택
 
-## Installation
+- **Framework**: NestJS (Node.js)
+- **Language**: TypeScript
+- **Database**: MySQL (Sequelize ORM)
+- **Cache**: Redis (ioredis)
+- **Authentication**: Passport, JWT
+- **Storage**: AWS S3, Azure Blob Storage
+- **Validation**: class-validator, 
+- **Testing**: Jest
+- **Logging**: Winston
+- **API Documentation**: 
+
+## 설치 방법
 
 ```bash
+# 패키지 설치
 $ npm install
 ```
 
-## Running the app
+## 환경 설정
+
+```
+# Database
+DB_HOST=localhost
+DB_PORT=3306
+DB_USERNAME=root
+DB_PASSWORD=password
+DB_DATABASE=ocowan_db
+
+# JWT
+JWT_SECRET=your_jwt_secret
+JWT_EXPIRES_IN=1d
+
+# Redis
+REDIS_HOST=localhost
+REDIS_PORT=6379
+REDIS_PASSWORD=
+
+# AWS S3
+AWS_ACCESS_KEY_ID=your_aws_access_key
+AWS_SECRET_ACCESS_KEY=your_aws_secret_key
+AWS_REGION=ap-northeast-2
+AWS_S3_BUCKET=your_bucket_name
+
+```
+
+## 실행 방법
 
 ```bash
-# development
+# 개발 모드
 $ npm run start
 
-# watch mode
+# 개발 모드 (파일 변경 감지)
 $ npm run start:dev
 
-# production mode
+# 프로덕션 모드
 $ npm run start:prod
 ```
 
-## Test
+## 테스트
 
 ```bash
-# unit tests
+# 단위 테스트
 $ npm run test
 
-# e2e tests
+# e2e 테스트
 $ npm run test:e2e
 
-# test coverage
+# 테스트 커버리지
 $ npm run test:cov
 ```
 
-## Support
+## API 기능
 
-Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
+- JWT 인증 및 권한 관리
+- 파일 업로드 (AWS S3, Azure Blob Storage)
+- 데이터 CRUD 작업
+- CRUD 표준 클래스 구현
+- REDIS 캐싱
+- 요청 제한 (Rate Limiting)
+- 요청, 응답 일괄처리 인터셉터
+- 로깅 기능
+- 기타 비즈니스 로직
 
-## Stay in touch
+## 프로젝트 주요 구조
 
-- Author - [Kamil Myśliwiec](https://kamilmysliwiec.com)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
+```
+src/
+├── auth/               # 인증 관련 모듈
+├── common/             # 예외 일괄처리 인터셉터, CRUD 표준 클래스
+├── interceptors/       # 요청, 응답 일괄처리 인터셉터
 
-## License
+├── modules/            # 기능별 모듈
+│   ├── dto/            # 모듈별 Data Transfer Objects
+│   ├── entities/       # 모듈별 데이터베이스 엔티티
+│   ├── auth/           # 인증 모듈
+│   ├── controllers/    # 모듈별 컨트롤러 레이어
+│   └── services/       # 모듈별 서비스 레이어
+├── app.module.ts       # 루트 모듈
+└── main.ts             # 애플리케이션 진입점
+```
 
-Nest is [MIT licensed](LICENSE).
+## 라이센스
+
+이 프로젝트는 [MIT 라이센스](LICENSE)를 따릅니다.
