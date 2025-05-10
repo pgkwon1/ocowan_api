@@ -14,7 +14,6 @@ RESTful API 설계 패턴을 따르고 있습니다.
 - **Validation**: class-validator, 
 - **Testing**: Jest
 - **Logging**: Winston
-- **API Documentation**: 
 
 ## 설치 방법
 
