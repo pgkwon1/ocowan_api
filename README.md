@@ -1,7 +1,3 @@
-# OCOWAN API
-
-NestJS 프레임워크를 기반으로 구축된 효율적이고 확장 가능한 서버 사이드 애플리케이션입니다.
-
 ## 소개
 
 이 프로젝트는 [NestJS](https://github.com/nestjs/nest) 프레임워크를 사용한 TypeScript 기반 API 서버입니다.
