@@ -7,6 +7,11 @@ import { FindOptions, Sequelize } from 'sequelize';
 import UsersService from '../users/users.service';
 @Controller('bigthrees')
 export class BigthreeController {
+  private readonly initialBigThree = {
+    commitCount: 0,
+    issueCount: 0,
+    pullReqCount: 0,
+  };
   constructor(
     private readonly bigthreeService: BigthreeService,
     private readonly usersService: UsersService,
@@ -39,22 +44,34 @@ export class BigthreeController {
     return result;
   }
 
-  @Get(['', ':login'])
+  @Get()
   @UseGuards(AuthGuard('jwt'))
-  async getBigthree(@Param('login') login: string, @Jwt() token: JwtEntity) {
-    let users_id;
-    // 들어온 라우팅에 따라 분기를 나눠 where절 설정
-    if (login) {
-      users_id = (await this.usersService.findOne({ where: { login } })).id;
-    } else {
-      users_id = token.id;
-    }
-
+  async getBigthree(@Jwt() token: JwtEntity) {
     const result = await this.bigthreeService.findOne({
+      where: {
+        users_id: token.id,
+      },
+      order: [['createdAt', 'DESC']],
+    });
+    if (result === null) {
+      return this.initialBigThree;
+    }
+    return result;
+  }
+
+  @Get(':login')
+  async getBigthreeByUser(@Param('login') login: string) {
+    const users_id = (await this.usersService.findOne({ where: { login } })).id;
+
+    const result = await this.bigthreeService.findOneOrNull({
       where: {
         users_id,
       },
     });
+
+    if (result === null) {
+      return this.initialBigThree;
+    }
 
     return result;
   }
