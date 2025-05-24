@@ -2,8 +2,10 @@ import {
   Body,
   Controller,
   Delete,
+  Get,
   HttpException,
   HttpStatus,
+  Param,
   Post,
   UseGuards,
 } from '@nestjs/common';
@@ -14,6 +16,7 @@ import { Jwt } from 'src/decorators/jwt.decorator';
 import { JwtEntity } from 'src/modules/auth/entities/jwt.entity';
 import { TilService } from '../til.service';
 import TilModel from '../entities/til.model';
+import { FindOptions } from 'sequelize';
 
 @Controller('emotify')
 export class EmotifyController {
@@ -22,6 +25,20 @@ export class EmotifyController {
     private readonly tilService: TilService,
   ) {}
 
+  @Get('/:til_id')
+  async getEmotify(@Param('til_id') til_id: string, @Jwt() token: JwtEntity) {
+    const users_id = token ? token.id : '';
+    const findOptions: FindOptions = {
+      where: {
+        til_id,
+        users_id,
+      },
+      attributes: ['type'],
+    };
+
+    const result = await this.emotifyService.findAll(findOptions);
+    return result;
+  }
   @UseGuards(AuthGuard('jwt'))
   @Post('/')
   async emotify(
