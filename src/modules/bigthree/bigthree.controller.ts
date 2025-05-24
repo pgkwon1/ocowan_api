@@ -63,7 +63,7 @@ export class BigthreeController {
   async getBigthreeByUser(@Param('login') login: string) {
     const users_id = (await this.usersService.findOne({ where: { login } })).id;
 
-    const result = await this.bigthreeService.findOneOrNull({
+    const result = await this.bigthreeService.findAllSafe({
       where: {
         users_id,
       },
@@ -78,7 +78,7 @@ export class BigthreeController {
 
   @Post()
   @UseGuards(AuthGuard('jwt'))
-  async createBigthree(@Jwt() token: JwtEntity): Promise<boolean> {
+  async checkBigThree(@Jwt() token: JwtEntity): Promise<boolean> {
     const { id: users_id, login, access_token } = token;
 
     const { pullReqCount, issueCount } =
