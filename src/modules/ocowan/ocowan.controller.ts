@@ -16,7 +16,6 @@ import { AuthGuard } from '@nestjs/passport';
 import { Jwt } from 'src/decorators/jwt.decorator';
 import { JwtEntity } from '../auth/entities/jwt.entity';
 import LevelsService from '../levels/levels.service';
-import { Sequelize } from 'sequelize-typescript';
 import { FindOptions, Op } from 'sequelize';
 
 @Controller('ocowan')
@@ -27,6 +26,7 @@ export class OcowanController {
     private readonly levelsService: LevelsService,
   ) {}
 
+  @UseGuards(AuthGuard('jwt'))
   @Get('/check/:login')
   async check(
     @Param('login') login: string,
@@ -106,10 +106,7 @@ export class OcowanController {
     const startDay = moment().startOf('month').format('YYYY-MM-DD');
     const endDay = moment().endOf('month').format('YYYY-MM-DD');
     const findOptions: FindOptions = {
-      attributes: [
-        'ocowan_date',
-        [Sequelize.literal('ANY_VALUE(total_count)'), 'total_count'],
-      ],
+      attributes: ['ocowan_date'],
       raw: true,
       where: {
         users_id,

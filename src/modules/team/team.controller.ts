@@ -107,8 +107,6 @@ export class TeamController {
     const bigThreeFindOptions: FindOptions = {
       attributes: [
         'createdAt',
-        [Sequelize.literal('ANY_VALUE(updatedAt)'), 'updatedAt'],
-        [Sequelize.literal('ANY_VALUE(users_id)'), 'users_id'],
 
         [Sequelize.fn('max', Sequelize.col('pullReqCount')), 'pullReqCount'],
         [Sequelize.fn('max', Sequelize.col('issueCount')), 'issueCount'],
