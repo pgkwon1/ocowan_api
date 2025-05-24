@@ -27,7 +27,6 @@ export class TilController {
     private readonly tilService: TilService,
     private readonly redisService: RedisService,
   ) {}
-  @UseGuards(AuthGuard('jwt'))
   @Get('/page/:page')
   async getAll(
     @Param('page') page: number = 1,
@@ -80,7 +79,6 @@ export class TilController {
     };
   }
 
-  @UseGuards(AuthGuard('jwt'))
   @Get('/:slug')
   async getOne(
     @Param('slug') slug: string,
@@ -92,27 +90,23 @@ export class TilController {
       },
       include: [
         {
-          model: EmotifyModel,
-          attributes: [[Sequelize.col('type'), 'type']],
-        },
-        {
           model: UsersModel,
           attributes: ['login', 'avatar_url', 'following', 'followers', 'bio'],
         },
       ],
     };
+    if (token !== undefined) {
+      const viewKey = `til-view-${slug}-${token.login}`;
+      const isViewByUser: string | null =
+        await this.redisService.getValue(viewKey);
 
-    const viewKey = `til-view-${slug}-${token.login}`;
-    const isViewByUser: string | null =
-      await this.redisService.getValue(viewKey);
-
-    if (isViewByUser === null) {
-      /* 조회 여부 redis에 저장 60초 동안 유지 */
-      await this.redisService.setExValue(viewKey, '1', 60);
-      /* 조회수 증가 */
-      await this.tilService.increment({ viewCnt: 1 }, options.where);
+      if (isViewByUser === null) {
+        /* 조회 여부 redis에 저장 60초 동안 유지 */
+        await this.redisService.setExValue(viewKey, '1', 60);
+        /* 조회수 증가 */
+        await this.tilService.increment({ viewCnt: 1 }, options.where);
+      }
     }
-
     return await this.tilService.findOne(options);
   }
 

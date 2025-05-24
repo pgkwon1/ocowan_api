@@ -1,10 +1,9 @@
 import { HttpService } from '@nestjs/axios';
-import { Body, Controller, Get, Param, Post, UseGuards } from '@nestjs/common';
+import { Body, Controller, Get, Param, Post } from '@nestjs/common';
 import { lastValueFrom } from 'rxjs';
 import UsersService from './users.service';
 import { JwtUtilService } from '../auth/jwtUtil.service';
 import { RedisService } from '../redis/redis.service';
-import { AuthGuard } from '@nestjs/passport';
 import { FindOptions } from 'sequelize';
 import UsersModel from './entities/users.model';
 import { LevelsModel } from '../levels/entities/levels.model';
@@ -16,7 +15,6 @@ export class UsersController {
     private readonly redisService: RedisService,
   ) {}
 
-  @UseGuards(AuthGuard('jwt'))
   @Get('/:login')
   async getUser(@Param('login') login: string) {
     const options: FindOptions<UsersModel> = {
@@ -105,6 +103,7 @@ export class UsersController {
         }
 
         const { id, levels } = result;
+        console.log(levels);
         const token = await JwtUtilService.generateJwtToken(
           login,
           id,
@@ -125,6 +124,7 @@ export class UsersController {
             following,
             public_repos,
             users_id: id,
+            levels,
           },
           isRegister,
           token,

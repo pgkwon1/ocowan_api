@@ -17,7 +17,6 @@ import UsersModel from 'src/modules/users/entities/users.model';
 export class CommentsController {
   constructor(private readonly commentsService: CommentsService) {}
 
-  @UseGuards(AuthGuard('jwt'))
   @Get(`/:til_id`)
   async getAll(@Param('til_id') til_id: string) {
     return await this.commentsService.findAll({
