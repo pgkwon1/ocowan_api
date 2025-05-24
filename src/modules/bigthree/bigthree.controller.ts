@@ -5,6 +5,13 @@ import { JwtEntity } from '../auth/entities/jwt.entity';
 import { AuthGuard } from '@nestjs/passport';
 import { FindOptions, Sequelize } from 'sequelize';
 import UsersService from '../users/users.service';
+
+interface MeasureBigThreeResponse {
+  pullReqCount: number;
+  issueCount: number;
+  commitCount: number;
+  isFirst: boolean;
+}
 @Controller('bigthrees')
 export class BigthreeController {
   private readonly initialBigThree = {
@@ -78,7 +85,9 @@ export class BigthreeController {
 
   @Post()
   @UseGuards(AuthGuard('jwt'))
-  async checkBigThree(@Jwt() token: JwtEntity): Promise<boolean> {
+  async measureAndUpdateBigThree(
+    @Jwt() token: JwtEntity,
+  ): Promise<MeasureBigThreeResponse> {
     const { id: users_id, login, access_token } = token;
 
     const { pullReqCount, issueCount } =
@@ -87,6 +96,13 @@ export class BigthreeController {
       login,
       access_token,
     );
+    const count = await this.bigthreeService.count({
+      where: {
+        users_id,
+      },
+    });
+    // 처음 측정의 경우 경험치 증가 X
+    const isFirst = count === 0;
 
     await this.bigthreeService.create({
       users_id,
@@ -94,6 +110,11 @@ export class BigthreeController {
       issueCount,
       commitCount,
     });
-    return true;
+    return {
+      pullReqCount,
+      issueCount,
+      commitCount,
+      isFirst,
+    };
   }
 }
