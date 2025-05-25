@@ -12,7 +12,7 @@ import {
 import { EmotifyService } from './emotify.service';
 import { AuthGuard } from '@nestjs/passport';
 import { EmotifyCreationAttribute } from '../entities/emotify.model';
-import { Jwt } from 'src/decorators/jwt.decorator';
+import { Jwt, OptionalJwt } from 'src/decorators/jwt.decorator';
 import { JwtEntity } from 'src/modules/auth/entities/jwt.entity';
 import { TilService } from '../til.service';
 import TilModel from '../entities/til.model';
@@ -26,7 +26,10 @@ export class EmotifyController {
   ) {}
 
   @Get('/:til_id')
-  async getEmotify(@Param('til_id') til_id: string, @Jwt() token: JwtEntity) {
+  async getEmotify(
+    @Param('til_id') til_id: string,
+    @OptionalJwt() token: JwtEntity,
+  ) {
     const users_id = token ? token.id : '';
     const findOptions: FindOptions = {
       where: {

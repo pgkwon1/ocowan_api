@@ -25,12 +25,37 @@ export const Jwt = createParamDecorator(
   },
 );
 
-function decodeJwt(token: string): Promise<string | jwt.JwtPayload> {
-  return new Promise((resolve, reject) => {
+function decodeJwt(
+  token: string,
+  throwException = true,
+): Promise<string | jwt.JwtPayload> {
+  return new Promise((resolve) => {
     jwt.verify(token, process.env.JWT_SECRET_KEY, (error, decoded) => {
-      if (error) reject(error);
-
+      if (error && throwException)
+        throw new BadRequestException('invalid token');
       resolve(decoded);
     });
   });
 }
+
+export const OptionalJwt = createParamDecorator(
+  async (data, context: ExecutionContext) => {
+    const { headers } = context.switchToHttp().getRequest();
+    const tokens = headers.authorization.split(' ')[1];
+    //예외 발생 여부.
+    const throwException = false;
+    const decodeTokens = await decodeJwt(tokens, throwException);
+    if (typeof decodeTokens === 'object') {
+      const { login, access_token, github_id, id } = decodeTokens;
+
+      return {
+        login,
+        access_token,
+        github_id,
+        id,
+      };
+    }
+
+    return undefined;
+  },
+);

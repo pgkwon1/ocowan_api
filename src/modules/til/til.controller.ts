@@ -13,10 +13,9 @@ import { AuthGuard } from '@nestjs/passport';
 import { TilService } from './til.service';
 import TilModel from './entities/til.model';
 import { TilCreateAttrDto } from './entities/til.entity';
-import { Jwt } from 'src/decorators/jwt.decorator';
+import { Jwt, OptionalJwt } from 'src/decorators/jwt.decorator';
 import { JwtEntity } from '../auth/entities/jwt.entity';
-import EmotifyModel from './entities/emotify.model';
-import { FindOptions, Sequelize } from 'sequelize';
+import { FindOptions } from 'sequelize';
 import UsersModel from '../users/entities/users.model';
 import { v4 as uuidv4 } from 'uuid';
 import { RedisService } from '../redis/redis.service';
@@ -82,7 +81,7 @@ export class TilController {
   @Get('/:slug')
   async getOne(
     @Param('slug') slug: string,
-    @Jwt() token: JwtEntity,
+    @OptionalJwt() token: JwtEntity,
   ): Promise<TilModel> {
     const options: FindOptions<TilModel> = {
       where: {
