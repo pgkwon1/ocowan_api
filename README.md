@@ -10,8 +10,8 @@ RESTful API 설계 패턴을 따르고 있습니다.
 - **Database**: MySQL (Sequelize ORM)
 - **Cache**: Redis (ioredis)
 - **Authentication**: Passport, JWT
-- **Storage**: AWS S3, Azure Blob Storage
-- **Validation**: class-validator, 
+- **Storage**: Vercel Blob Storage
+- **Validation**: class-validator,
 - **Testing**: Jest
 - **Logging**: Winston
 
@@ -78,7 +78,7 @@ $ npm run test:cov
 ## API 기능
 
 - JWT 인증 및 권한 관리
-- 파일 업로드 (AWS S3, Azure Blob Storage)
+- 파일 업로드 (Vercel Blob Storage)
 - 데이터 CRUD 작업
 - CRUD 표준 클래스 구현
 - REDIS 캐싱
@@ -108,7 +108,6 @@ src/
 ## 프로젝트 구조
 
 ![프로젝트 구조 다이어그램](./diagram.png)
-
 
 ## 라이센스
 

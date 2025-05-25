@@ -11,11 +11,13 @@ import { CommentsController } from './comments/comments/comments.controller';
 import { CommentsService } from './comments/comments/comments.service';
 import CommentsModel from './entities/comments.model';
 import { RedisModule } from '../redis/redis.module';
+import { ConfigModule } from '@nestjs/config';
 
 @Module({
   imports: [
     SequelizeModule.forFeature([TilModel, EmotifyModel, CommentsModel]),
     RedisModule,
+    ConfigModule,
   ],
   providers: [TilService, EmotifyService, CommentsService],
   controllers: [TilController, EmotifyController, CommentsController],

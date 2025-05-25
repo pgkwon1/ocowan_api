@@ -6,7 +6,9 @@ import {
   Param,
   Patch,
   Post,
+  Put,
   Query,
+  UploadedFile,
   UseGuards,
 } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
@@ -19,12 +21,17 @@ import { FindOptions } from 'sequelize';
 import UsersModel from '../users/entities/users.model';
 import { v4 as uuidv4 } from 'uuid';
 import { RedisService } from '../redis/redis.service';
+import { put } from '@vercel/blob';
+import { CustomFileDecorator } from 'src/decorators/file.decorator';
+import { ConfigService } from '@nestjs/config';
+import * as fs from 'fs/promises';
 
 @Controller('tils')
 export class TilController {
   constructor(
     private readonly tilService: TilService,
     private readonly redisService: RedisService,
+    private readonly configService: ConfigService,
   ) {}
   @Get('/page/:page')
   async getAll(
@@ -154,5 +161,24 @@ export class TilController {
       },
     };
     return await this.tilService.delete(options, id);
+  }
+
+  @UseGuards(AuthGuard('jwt'))
+  @CustomFileDecorator({ fieldName: 'tilImage', destination: 'upload/til' })
+  @Put(`/upload`)
+  async uploadImage(@UploadedFile() file: Express.Multer.File) {
+    const fileBuffer = await fs.readFile(file.path);
+
+    const { url } = await put(file.path, fileBuffer, {
+      access: 'public',
+      token: this.configService.get('BLOB_READ_WRITE_TOKEN'),
+    });
+    fs.unlink(file.path);
+    // 업로드 성공시
+
+    if (url && typeof url === 'string') {
+      return { url };
+    }
+    return { url: '' };
   }
 }
