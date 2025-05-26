@@ -10,8 +10,9 @@ import { TeamInviteModel } from './invite/entities/invite.model';
 import BigThreeModel from '../bigthree/entities/bigthree.model';
 import { HttpModule } from '@nestjs/axios';
 import UsersModel from '../users/entities/users.model';
-import { StorageModule } from '../storage/stroage.module';
 import { BigthreeModule } from '../bigthree/bigthree.module';
+import { ConfigModule } from '@nestjs/config';
+import { StorageModule } from '../storage/stroage.module';
 
 @Module({
   imports: [
@@ -29,8 +30,9 @@ import { BigthreeModule } from '../bigthree/bigthree.module';
     }),
     TeamMemberModule,
     TeamInviteModule,
-    StorageModule,
     BigthreeModule,
+    StorageModule,
+    ConfigModule,
   ],
   providers: [TeamService],
   controllers: [TeamController],

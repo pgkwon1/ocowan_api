@@ -1,30 +1,27 @@
-import { Injectable } from '@nestjs/common';
-import { ConfigService } from '@nestjs/config';
-import { PutObjectCommand, S3 } from '@aws-sdk/client-s3';
+import { Inject, Injectable } from '@nestjs/common';
 
+export interface IStorageService {
+  upload(file: IFileAttribute): Promise<{ url: string }>;
+  delete(url: string): Promise<void>;
+}
+
+export interface IFileAttribute {
+  path: string;
+  buffer: Buffer;
+  originalname?: string;
+}
 @Injectable()
-export class StorageService {
-  private readonly s3: S3;
-  constructor(private readonly configService: ConfigService) {
-    this.s3 = new S3({
-      region: this.configService.get<string>('REGION'),
-      credentials: {
-        accessKeyId: this.configService.get<string>('AWS_S3_ACCESS_KEY'),
-        secretAccessKey: this.configService.get<string>('AWS_S3_SECRET_KEY'),
-      },
-    });
+export class StorageService implements IStorageService {
+  constructor(
+    @Inject('STORAGE_SERVICE')
+    private readonly fileStorageService: IStorageService,
+  ) {}
+
+  async upload(file: IFileAttribute): Promise<{ url: string }> {
+    return await this.fileStorageService.upload(file);
   }
 
-  async upload(file: Express.Multer.File): Promise<{ url: string }> {
-    const command = new PutObjectCommand({
-      Bucket: this.configService.get('BUCKET_NAME'),
-      Key: file.originalname,
-      Body: file.buffer,
-      ContentType: file.mimetype,
-    });
-    await this.s3.send(command);
-    return {
-      url: `https://${this.configService.get<string>('BUCKET_NAME')}.s3.amazonaws.com/${file.originalname}`,
-    };
+  async delete(url: string): Promise<void> {
+    return await this.fileStorageService.delete(url);
   }
 }

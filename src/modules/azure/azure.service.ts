@@ -1,9 +1,10 @@
 import { BlobServiceClient, BlockBlobClient } from '@azure/storage-blob';
 import { Injectable } from '@nestjs/common';
 import * as dotenv from 'dotenv';
+import { IFileAttribute, IStorageService } from '../storage/storage.service';
 dotenv.config();
 @Injectable()
-export class AzureService {
+export class AzureService implements IStorageService {
   private azureConnection;
   private containerName;
 
@@ -24,13 +25,23 @@ export class AzureService {
     return containerClient.getBlockBlobClient(file);
   }
 
-  async uploadFile(file: Express.Multer.File): Promise<string> {
+  async upload(file: IFileAttribute): Promise<{ url: string }> {
     const blobClient = this.getBlobClient(file.originalname);
     const result = await blobClient.uploadData(file.buffer);
-    const imageUrl = blobClient.url;
+    const url = blobClient.url;
     if (result === null) {
       throw new Error('파일 업로드에 실패하였습니다.');
     }
-    return imageUrl;
+    return { url };
+  }
+
+  async delete(url: string): Promise<void> {
+    const fileName = url.split('/').pop();
+    if (!fileName) {
+      throw new Error('올바르지 않은 URL 형식입니다.');
+    }
+
+    const blobClient = this.getBlobClient(fileName);
+    await blobClient.delete();
   }
 }

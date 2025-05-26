@@ -80,7 +80,6 @@ dotenv.config();
 
     TeamInviteModule,
     TeamMemberModule,
-    AzureModule,
     RedisModule,
     TilModule,
     StorageModule,

@@ -7,7 +7,6 @@ import {
   Post,
   UploadedFile,
   UseGuards,
-  UseInterceptors,
 } from '@nestjs/common';
 
 import { TeamService } from './team.service';
@@ -15,17 +14,15 @@ import { AuthGuard } from '@nestjs/passport';
 import { FindOptions, Sequelize } from 'sequelize';
 import { TeamMemberService } from './member/member.service';
 import { BigthreeService } from '../bigthree/bigthree.service';
-import { FileInterceptor } from '@nestjs/platform-express';
-import { diskStorage, memoryStorage } from 'multer';
-import { imageFileFilter } from 'src/utils/file.filter';
 import { Jwt } from 'src/decorators/jwt.decorator';
 import { JwtEntity } from '../auth/entities/jwt.entity';
 import { TeamModel } from './entities/team.model';
 import * as moment from 'moment-timezone';
 
-import { v4 as uuidv4 } from 'uuid';
 import UsersModel from '../users/entities/users.model';
 import { TeamMemberModel } from './member/entities/member.model';
+import * as fs from 'fs/promises';
+import { CustomFileDecorator } from 'src/decorators/file.decorator';
 import { StorageService } from '../storage/storage.service';
 
 @Controller('teams')
@@ -130,13 +127,7 @@ export class TeamController {
   }
 
   @UseGuards(AuthGuard('jwt'))
-  @UseInterceptors(
-    FileInterceptor('logo', {
-      fileFilter: imageFileFilter,
-      storage: memoryStorage(),
-    }),
-  )
-  @UseGuards(AuthGuard('jwt'))
+  @CustomFileDecorator({ fieldName: 'teamLogo', destination: 'upload/team' })
   @Post('/create')
   async createTeam(
     @UploadedFile() file: Express.Multer.File,
@@ -144,9 +135,12 @@ export class TeamController {
     @Jwt() token: JwtEntity,
   ) {
     const { id: users_id } = token;
-    file.originalname = `${uuidv4()}-${file.originalname}`;
-
-    data.logo = (await this.storageService.upload(file)).url;
+    const buffer = await fs.readFile(file.path);
+    const { url } = await this.storageService.upload({
+      path: file.path,
+      buffer,
+    });
+    data.logo = url;
 
     const result = await this.teamService.create(data);
 
@@ -155,32 +149,24 @@ export class TeamController {
       team_id: result.id,
       users_id,
       leader_yn: true,
-      join_date: moment().format('YYYY-mm-dd'),
+      join_date: moment().format('YYYY-MM-DD'),
     });
+    fs.unlink(file.path);
     return result;
   }
 
   @UseGuards(AuthGuard('jwt'))
-  @UseInterceptors(
-    FileInterceptor('logo', {
-      fileFilter: imageFileFilter,
-      storage: diskStorage({
-        destination: 'uploads/logo ',
-        filename: (req, file: Express.Multer.File, callback) => {
-          const unique = Date.now() + '-' + Math.round(Math.random() * 1e9);
-          file.originalname = btoa(file.originalname);
-          const filename = `${unique}-${file.originalname}`;
-          callback(null, filename);
-        },
-      }),
-    }),
-  )
-  @UseGuards(AuthGuard('jwt'))
   @Patch('/edit')
+  @CustomFileDecorator({ fieldName: 'teamLogo', destination: 'upload/team' })
   async editTeam(@UploadedFile() file: Express.Multer.File, @Body() data) {
     const { id, name, description } = data;
+    const buffer = await fs.readFile(file.path);
+    const { url } = await this.storageService.upload({
+      path: file.path,
+      buffer,
+    });
     const updateData = {
-      logo: file ? file.filename : data.logo,
+      logo: url,
       name,
       description,
     };
@@ -188,6 +174,8 @@ export class TeamController {
       id,
     };
     const result = await this.teamService.update(updateData, where);
+    fs.unlink(file.path);
+
     return result;
   }
 }
