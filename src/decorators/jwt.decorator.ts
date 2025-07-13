@@ -7,8 +7,9 @@ import * as jwt from 'jsonwebtoken';
 
 export const Jwt = createParamDecorator(
   async (data, context: ExecutionContext) => {
-    const { headers } = context.switchToHttp().getRequest();
-    const tokens = headers.authorization.split(' ')[1];
+    const request = context.switchToHttp().getRequest();
+    const tokens = request.cookies.token;
+
     const decodeTokens = await decodeJwt(tokens);
     if (typeof decodeTokens === 'object') {
       const { login, access_token, github_id, id } = decodeTokens;
@@ -40,8 +41,8 @@ function decodeJwt(
 
 export const OptionalJwt = createParamDecorator(
   async (data, context: ExecutionContext) => {
-    const { headers } = context.switchToHttp().getRequest();
-    const tokens = headers.authorization.split(' ')[1];
+    const request = context.switchToHttp().getRequest();
+    const tokens = request.cookies.token;
     //예외 발생 여부.
     const throwException = false;
     const decodeTokens = await decodeJwt(tokens, throwException);
