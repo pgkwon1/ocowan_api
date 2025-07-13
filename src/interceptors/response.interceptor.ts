@@ -20,6 +20,7 @@ export class ResponseInterceptor implements NestInterceptor {
   ): Observable<any> {
     const { statusCode } = context.switchToHttp().getResponse();
     const request = context.switchToHttp().getRequest();
+    const response = context.switchToHttp().getResponse();
     this.logger.http(
       `request => url : ${request.url} method : ${request.method}`,
     );
@@ -33,6 +34,24 @@ export class ResponseInterceptor implements NestInterceptor {
           'http',
           `response => \nresult : ${result}, message : ${message} code: ${statusCode} `,
         );
+        if (request.url === '/users/login') {
+          // 로그인 토큰 쿠키에 저장
+          response.cookie('token', data.token, {
+            maxAge: 168 * 60 * 60 * 1000,
+            httpOnly: true,
+            sameSite: 'strict',
+            secure: true,
+          });
+        }
+
+        if (request.url === '/users/logout') {
+          response.cookie('token', data.token, {
+            maxAge: 0,
+            httpOnly: true,
+            sameSite: 'strict',
+            secure: true,
+          });
+        }
         return {
           data,
           result,
