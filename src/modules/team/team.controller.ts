@@ -1,6 +1,7 @@
 import {
   Body,
   Controller,
+  Delete,
   Get,
   Param,
   Patch,
@@ -181,5 +182,28 @@ export class TeamController {
     const result = await this.teamService.update(updateData, where);
 
     return result;
+  }
+
+  @UseGuards(AuthGuard('jwt'))
+  @Delete('/delete')
+  async delete(@Body() data: { team_id: string }, @Jwt() token: JwtEntity) {
+    const { team_id } = data;
+    const { login } = token;
+    await this.teamMemberService.executeTransaction([
+      async () =>
+        await this.teamService.delete({
+          where: {
+            id: team_id,
+            leader: login,
+          },
+        }),
+      async () =>
+        await this.teamMemberService.delete({
+          where: {
+            team_id,
+          },
+        }),
+    ]);
+    return true;
   }
 }
