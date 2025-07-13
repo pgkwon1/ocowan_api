@@ -74,8 +74,8 @@ export class TeamController {
       where: {
         users_id: id,
       },
-      order: [['createdAt', 'DESC']],
       attributes: ['team_id'],
+      order: [['join_date', 'DESC']],
       include: [
         {
           model: TeamModel,
