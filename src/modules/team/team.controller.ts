@@ -159,14 +159,19 @@ export class TeamController {
   @Patch('/edit')
   @CustomFileDecorator({ fieldName: 'teamLogo', destination: 'upload/team' })
   async editTeam(@UploadedFile() file: Express.Multer.File, @Body() data) {
-    const { id, name, description } = data;
-    const buffer = await fs.readFile(file.path);
-    const { url } = await this.storageService.upload({
-      path: file.path,
-      buffer,
-    });
+    const { id, name, description, teamLogo } = data;
+    let logo = teamLogo;
+    if (file) {
+      const buffer = await fs.readFile(file.path);
+      const { url } = await this.storageService.upload({
+        path: file.path,
+        buffer,
+      });
+      logo = url;
+      fs.unlink(file.path);
+    }
     const updateData = {
-      logo: url,
+      logo,
       name,
       description,
     };
@@ -174,7 +179,6 @@ export class TeamController {
       id,
     };
     const result = await this.teamService.update(updateData, where);
-    fs.unlink(file.path);
 
     return result;
   }
