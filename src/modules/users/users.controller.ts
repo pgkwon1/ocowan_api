@@ -1,5 +1,14 @@
 import { HttpService } from '@nestjs/axios';
-import { Body, Controller, Get, Param, Post } from '@nestjs/common';
+import {
+  BadRequestException,
+  Body,
+  Controller,
+  Get,
+  Param,
+  Post,
+  Res,
+  UseGuards,
+} from '@nestjs/common';
 import { lastValueFrom } from 'rxjs';
 import UsersService from './users.service';
 import { JwtUtilService } from '../auth/jwtUtil.service';
@@ -7,6 +16,9 @@ import { RedisService } from '../redis/redis.service';
 import { FindOptions } from 'sequelize';
 import UsersModel from './entities/users.model';
 import { LevelsModel } from '../levels/entities/levels.model';
+import { JwtEntity } from '../auth/entities/jwt.entity';
+import { AuthGuard } from '@nestjs/passport';
+import { Jwt } from 'src/decorators/jwt.decorator';
 @Controller('users')
 export class UsersController {
   constructor(
@@ -103,7 +115,6 @@ export class UsersController {
         }
 
         const { id, levels } = result;
-        console.log(levels);
         const token = await JwtUtilService.generateJwtToken(
           login,
           id,
@@ -114,7 +125,6 @@ export class UsersController {
         await this.redisService.hashSetValue(`user:${data.login}`, {
           token,
         });
-
         return {
           data: {
             login,
@@ -134,5 +144,20 @@ export class UsersController {
     } else {
       return false;
     }
+  }
+
+  @Post('/logout')
+  async logout(@Jwt() token: JwtEntity) {
+    const result = await this.redisService.hashGetValue(
+      `user:${token.login}`,
+      'token',
+    );
+    if (!result) {
+      throw new BadRequestException('올바르지 않은 접근입니다.');
+    }
+    await this.redisService.hashSetValue(`user:${token.login}`, {
+      token: null,
+    });
+    return true;
   }
 }
