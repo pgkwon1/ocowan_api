@@ -24,10 +24,18 @@ export class BigthreeController {
     private readonly usersService: UsersService,
   ) {}
 
-  @Get('latest')
+  @Get('latest/:login')
   @UseGuards(AuthGuard('jwt'))
-  async getLatestBigThree(@Jwt() token: JwtEntity) {
-    const { id: users_id } = token;
+  async getLatestBigThree(
+    @Jwt() token: JwtEntity,
+    @Param('login') login: string,
+  ) {
+    let users_id;
+    if (login) {
+      users_id = (await this.usersService.findOne({ where: { login } })).id;
+    } else {
+      users_id = token.id;
+    }
     const findOptions: FindOptions = {
       where: {
         users_id,

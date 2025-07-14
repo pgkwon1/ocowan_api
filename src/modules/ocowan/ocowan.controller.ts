@@ -15,15 +15,15 @@ import { lastValueFrom } from 'rxjs';
 import { AuthGuard } from '@nestjs/passport';
 import { Jwt } from 'src/decorators/jwt.decorator';
 import { JwtEntity } from '../auth/entities/jwt.entity';
-import LevelsService from '../levels/levels.service';
 import { FindOptions, Op } from 'sequelize';
+import UsersService from '../users/users.service';
 
 @Controller('ocowan')
 export class OcowanController {
   constructor(
     private readonly ocowanService: OcowanService,
     private readonly httpService: HttpService,
-    private readonly levelsService: LevelsService,
+    private readonly usersService: UsersService,
   ) {}
 
   @UseGuards(AuthGuard('jwt'))
@@ -101,8 +101,13 @@ export class OcowanController {
 
   @UseGuards(AuthGuard('jwt'))
   @Get('/:login')
-  async getAllOcowan(@Jwt() token: JwtEntity) {
-    const { id: users_id } = token;
+  async getAllOcowan(@Jwt() token: JwtEntity, @Param('login') login: string) {
+    let users_id;
+    if (login) {
+      users_id = (await this.usersService.findOne({ where: { login } })).id;
+    } else {
+      users_id = token.id;
+    }
     const startDay = moment().startOf('month').format('YYYY-MM-DD');
     const endDay = moment().endOf('month').format('YYYY-MM-DD');
     const findOptions: FindOptions = {

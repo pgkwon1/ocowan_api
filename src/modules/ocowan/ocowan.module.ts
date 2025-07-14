@@ -7,12 +7,14 @@ import OcowanModel from './entities/ocowan.model';
 import { LevelsModel } from '../levels/entities/levels.model';
 import { LevelsLogsModel } from '../levels/entities/logs.model';
 import { LevelsModule } from '../levels/levels.module';
+import { UsersModule } from '../users/users.module';
 
 @Module({
   imports: [
     HttpModule,
     SequelizeModule.forFeature([OcowanModel, LevelsModel, LevelsLogsModel]),
     LevelsModule,
+    UsersModule,
   ],
   controllers: [OcowanController],
   providers: [OcowanService],
