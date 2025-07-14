@@ -100,7 +100,7 @@ export class OcowanController {
   }
 
   @UseGuards(AuthGuard('jwt'))
-  @Get('/:login')
+  @Get(['/', '/:login'])
   async getAllOcowan(@Jwt() token: JwtEntity, @Param('login') login: string) {
     let users_id;
     if (login) {

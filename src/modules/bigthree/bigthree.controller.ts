@@ -24,7 +24,7 @@ export class BigthreeController {
     private readonly usersService: UsersService,
   ) {}
 
-  @Get('latest/:login')
+  @Get(['/latest', '/latest/:login'])
   @UseGuards(AuthGuard('jwt'))
   async getLatestBigThree(
     @Jwt() token: JwtEntity,
