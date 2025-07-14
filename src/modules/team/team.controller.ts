@@ -151,7 +151,7 @@ export class TeamController {
       team_id: result.id,
       users_id,
       leader_yn: true,
-      join_date: moment().format('YYYY-MM-DD'),
+      join_date: moment().tz('Asia/Seoul').format('YYYY-MM-DD'),
     });
     fs.unlink(file.path);
     return result;

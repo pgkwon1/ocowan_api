@@ -30,7 +30,10 @@ export default class InviteController {
   @Post('/createCode')
   async createInviteCode(@Body() body: { teamId: string }) {
     const { teamId } = body;
-    const expire_time = moment().add(10, 'minutes').format('YYYY-MM-DD H:mm:s');
+    const expire_time = moment()
+      .tz('Asia/Seoul')
+      .add(10, 'minutes')
+      .format('YYYY-MM-DD H:mm:s');
     const inviteData = {
       team_id: teamId,
       expire_time,

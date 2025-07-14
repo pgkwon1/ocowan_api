@@ -32,7 +32,7 @@ export class OcowanController {
     @Param('login') login: string,
     @Jwt() token: JwtEntity,
   ): Promise<number | boolean> {
-    const now = moment().format('YYYY-MM-DD');
+    const now = moment().tz('Asia/Seoul').format('YYYY-MM-DD');
     const query = `query{
       viewer {
         contributionsCollection(from: "${now}T00:00:00Z", to: "${now}T23:59:59Z") {
@@ -74,7 +74,7 @@ export class OcowanController {
   ): Promise<boolean> {
     const { total_count } = data;
     const { id: users_id } = token;
-    const ocowan_date = moment().format('YYYY-MM-DD');
+    const ocowan_date = moment().tz('Asia/Seoul').format('YYYY-MM-DD');
 
     const isOcowan = await this.ocowanService.count({
       where: {
@@ -108,8 +108,14 @@ export class OcowanController {
     } else {
       users_id = token.id;
     }
-    const startDay = moment().startOf('month').format('YYYY-MM-DD');
-    const endDay = moment().endOf('month').format('YYYY-MM-DD');
+    const startDay = moment()
+      .tz('Asia/Seoul')
+      .startOf('month')
+      .format('YYYY-MM-DD');
+    const endDay = moment()
+      .tz('Asia/Seoul')
+      .endOf('month')
+      .format('YYYY-MM-DD');
     const findOptions: FindOptions = {
       attributes: ['ocowan_date'],
       raw: true,
